@@ -9,7 +9,7 @@ import api.utils.Config;
 import org.bukkit.plugin.Plugin;
 
 /**
- * Created by loucass003 on 25/11/16.
+ * Created by loucass003 on 25/11/16
  */
 public class API {
 
@@ -27,7 +27,7 @@ public class API {
     private Config configManager;
     private GlobalConfigData globalConfig;
 
-    boolean useQueueManager = true;
+    private boolean useQueueManager = true;
 
     public API(Plugin plugin)
     {
