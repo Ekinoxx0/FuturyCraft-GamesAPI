@@ -9,6 +9,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Scoreboard;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,16 +27,15 @@ public class QueueManager implements Listener {
     private final int minPlayers;
 
     private final Long countdown;
-    private Long launchTime = -1L;
-    private Long counter = -1L;
-
+    public Long launchTime;
+    public Long currentTime = -1L;
+    public boolean isFinished = false;
+    public boolean started = false;
     private int playerCount = 0;
     private int threadId = -1;
 
     private final Map<Player, ScoreboardSign> scorebords = new HashMap<>();
     private final List<QueueListener> listners = new ArrayList<>();
-
-    private boolean isStarted = false;
 
     public QueueManager(int maxPlayers, int minPlayers, Long countdown)
     {
@@ -49,35 +50,50 @@ public class QueueManager implements Listener {
     private void onPlayerJoin(PlayerJoinEvent e)
     {
         playerCount++;
-        if(playerCount >= this.minPlayers && this.launchTime == -1L)
+        for(Player p : Bukkit.getOnlinePlayers())
+            updateScorebord(p);
+        if(playerCount >= this.minPlayers && !started)
         {
-            this.launchTime = System.currentTimeMillis();
-            this.threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.instance.getPlugin(), () -> {
-                counter = (this.launchTime + this.countdown) - System.currentTimeMillis();
-                Bukkit.getOnlinePlayers().forEach(this::updateScorebord);
-                if(playerCount >= this.minPlayers && counter <= 0 || playerCount >= this.maxPlayers)
-                {
-                    listners.forEach(QueueListener::onGameStart);
-                    scorebords.values().forEach(ScoreboardSign::destroy);
-                    scorebords.clear();
-                    isStarted = true;
-                    Bukkit.getServer().getScheduler().cancelTask(threadId);
-                    threadId = -1;
+            threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.getInstance().getPlugin(), () -> {
+                if(started) {
+                    currentTime = (this.launchTime + this.countdown) - System.currentTimeMillis();
+                    if (currentTime < 0 || playerCount == this.maxPlayers) {
+                        this.isFinished = true;
+                        this.currentTime = 0L;
+                    }
+
+                    if(playerCount >= this.minPlayers) {
+
+                        for (Player pl : Bukkit.getOnlinePlayers())
+                            updateScorebord(pl);
+                        if(isFinished)
+                        {
+                            started = false;
+                            for(QueueListener q : listners)
+                                q.onGameStart();
+                            for (ScoreboardSign s : scorebords.values())
+                                s.destroy();
+                            Bukkit.getScheduler().cancelTask(threadId);
+                        }
+                    }
+                    else {
+                        started = false;
+                        currentTime = 0L;
+                        launchTime = 0L;
+                    }
                 }
-            }, 0L, 20L);
+            }, 0, 20L);
+            this.launchTime = System.currentTimeMillis();
+            this.started = true;
         }
-        Bukkit.getOnlinePlayers().forEach(this::updateScorebord);
     }
 
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e)
     {
         playerCount--;
-        if(playerCount <= 0 && threadId != -1)
-            Bukkit.getServer().getScheduler().cancelTask(threadId);
-        if(scorebords.containsKey(e.getPlayer()))
-            scorebords.remove(e.getPlayer());
-        Bukkit.getOnlinePlayers().forEach(this::updateScorebord);
+        for(Player p : Bukkit.getOnlinePlayers())
+            updateScorebord(p);
     }
 
     private void updateScorebord(Player p)
@@ -92,11 +108,8 @@ public class QueueManager implements Listener {
             scorebords.put(p, s);
         }
 
-        if(counter < 0L)
-            counter = 0L;
-
-        int seconds = (int) (counter / 1000) % 60 ;
-        int minutes = (int) ((counter / (1000*60)) % 60);
+        int seconds = (int) (currentTime / 1000) % 60 ;
+        int minutes = (int) ((currentTime / (1000*60)) % 60);
         String time = String.format("%02d:%02d", minutes, seconds);
 
         s.setLine(0, this.playerCount + "/" + this.maxPlayers);
@@ -116,9 +129,5 @@ public class QueueManager implements Listener {
     public void registerListner(QueueListener l)
     {
         this.listners.add(l);
-    }
-
-    public boolean isStarted() {
-        return isStarted;
     }
 }
