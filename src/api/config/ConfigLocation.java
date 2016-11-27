@@ -28,11 +28,14 @@ public class ConfigLocation {
 
     public Location getLocation()
     {
+        if(this.world == null)
+            return null;
         World w = API.getInstance().getPlugin().getServer().getWorld(this.world);
         if(w == null)
             return null;
         Location l = new Location(w, pos.getX(), pos.getY(), pos.getZ());
-        l.setDirection(this.orientation);
+        if(orientation != null)
+            l.setDirection(this.orientation);
         return l;
     }
 
