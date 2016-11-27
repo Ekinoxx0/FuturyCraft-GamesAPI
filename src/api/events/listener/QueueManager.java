@@ -1,9 +1,11 @@
 package api.events.listener;
 
 import api.API;
+import api.gui.Title;
 import api.interfaces.QueueListener;
 import api.gui.ScoreboardSign;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -57,6 +59,25 @@ public class QueueManager implements Listener {
             threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.getInstance().getPlugin(), () -> {
                 if(started) {
                     currentTime = (this.launchTime + this.countdown) - System.currentTimeMillis();
+                    int seconds = (int) (currentTime / 1000) % 60;
+                    if(seconds <= 3)
+                    {
+                        Title title = new Title();
+                        title.setFadeIn(2);
+                        title.setFadeOut(2);
+                        title.setText("Debut dans " + seconds + "...");
+                        title.setColor(ChatColor.GOLD);
+                        if(seconds <= 3 && seconds >= 2)
+                        {
+                            title.setFadeIn(0);
+                        }
+                        if(seconds == 0)
+                            title.setText("Go !");
+
+                        for (Player pl : Bukkit.getOnlinePlayers())
+                            title.sendTitle(pl);
+                    }
+
                     if (currentTime < 0 || playerCount == this.maxPlayers) {
                         this.isFinished = true;
                         this.currentTime = 0L;
