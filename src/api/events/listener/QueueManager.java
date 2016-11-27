@@ -72,11 +72,13 @@ public class QueueManager implements Listener {
                         if(isFinished)
                         {
                             started = false;
+                            System.out.println(listners);
                             for(QueueListener q : listners)
                                 q.onGameStart();
                             for (ScoreboardSign s : scorebords.values())
                                 s.destroy();
                             Bukkit.getScheduler().cancelTask(threadId);
+                            threadId = -1;
                         }
                     }
                     else {
@@ -97,6 +99,9 @@ public class QueueManager implements Listener {
         playerCount--;
         for(Player p : Bukkit.getOnlinePlayers())
             updateScorebord(p);
+
+        if(playerCount == 0)
+            this.clear();
     }
 
     private void updateScorebord(Player p)
@@ -122,8 +127,9 @@ public class QueueManager implements Listener {
     public void clear()
     {
         scorebords.values().forEach(ScoreboardSign::destroy);
-        scorebords.clear();
-        listners.clear();
+        isFinished = false;
+        started = false;
+        currentTime = -1L;
         if(threadId != -1)
             Bukkit.getServer().getScheduler().cancelTask(threadId);
     }
