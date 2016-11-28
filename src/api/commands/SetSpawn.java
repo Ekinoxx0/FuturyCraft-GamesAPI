@@ -14,9 +14,11 @@ import java.util.ArrayList;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class SetSpawn extends BukkitCommand {
+public class SetSpawn extends BukkitCommand
+{
 
-    public SetSpawn() {
+    public SetSpawn()
+    {
         super("setSpawn");
         this.description = "Set the spawn of the world";
         this.usageMessage = "/setspawn";
@@ -25,7 +27,8 @@ public class SetSpawn extends BukkitCommand {
     }
 
     @Override
-    public boolean execute(CommandSender cs, String s, String[] args) {
+    public boolean execute(CommandSender cs, String s, String[] args)
+    {
 
         if(!(cs instanceof Player))
         {
@@ -35,14 +38,16 @@ public class SetSpawn extends BukkitCommand {
 
         Player sender = (Player)cs;
 
-        if(args.length > 0) {
+        if(args.length > 0)
+        {
             sender.sendMessage(ChatColor.RED + this.getUsage());
             return false;
         }
 
         SetSpawnEvent se = new SetSpawnEvent(sender, sender.getLocation());
         API.getInstance().getPlugin().getServer().getPluginManager().callEvent(se);
-        if(!se.isCancelled()) {
+        if(!se.isCancelled())
+        {
             Vector loc = se.getLocation().toVector();
             Vector orr = se.getLocation().getDirection();
             String world = se.getLocation().getWorld().getName();

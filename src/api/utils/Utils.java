@@ -11,7 +11,8 @@ import java.util.List;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class Utils {
+public class Utils
+{
 
     public static void writeText(File f, String content) {
 
@@ -34,10 +35,12 @@ public class Utils {
             StringBuilder sb = new StringBuilder();
             String line = br.readLine();
 
-            while (line != null) {
+            while (line != null)
+            {
                 sb.append(line);
                 line = br.readLine();
             }
+
             String everything = sb.toString();
             br.close();
             return everything;

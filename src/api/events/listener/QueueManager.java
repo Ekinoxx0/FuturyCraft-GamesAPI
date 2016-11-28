@@ -23,8 +23,8 @@ import java.util.Map;
 /**
  * Created by loucass003 on 20/11/16.
  */
-public class QueueManager implements Listener {
-
+public class QueueManager implements Listener
+{
     private final int maxPlayers;
     private final int minPlayers;
 
@@ -51,28 +51,35 @@ public class QueueManager implements Listener {
     @EventHandler
     private void onPlayerJoin(PlayerJoinEvent e)
     {
+        if(isFinished && !started)
+            return;
         playerCount++;
+        checkPlayers();
+    }
+
+    public void checkPlayers()
+    {
         for(Player p : Bukkit.getOnlinePlayers())
             updateScorebord(p);
-        if(playerCount >= this.minPlayers && !started)
+        if(playerCount >= this.minPlayers && !started && !isFinished)
         {
-            threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.getInstance().getPlugin(), () -> {
-                if(started) {
+            threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.getInstance().getPlugin(), () ->
+            {
+                if(started)
+                {
                     currentTime = (this.launchTime + this.countdown) - System.currentTimeMillis();
 
-                    if (currentTime < 0 || playerCount == this.maxPlayers) {
+                    if (currentTime < 0 || playerCount == this.maxPlayers)
+                    {
                         this.isFinished = true;
                         this.currentTime = 0L;
                     }
 
-                    if(playerCount >= this.minPlayers) {
-
-                        for (Player pl : Bukkit.getOnlinePlayers())
-                            updateScorebord(pl);
+                    if(playerCount >= this.minPlayers)
+                    {
                         if(isFinished)
                         {
                             started = false;
-                            System.out.println(listners);
                             for(QueueListener q : listners)
                                 q.onGameStart();
                             for (ScoreboardSign s : scorebords.values())
@@ -81,11 +88,14 @@ public class QueueManager implements Listener {
                             threadId = -1;
                         }
                     }
-                    else {
+                    else
+                    {
                         started = false;
                         currentTime = 0L;
                         launchTime = 0L;
                     }
+                    for (Player pl : Bukkit.getOnlinePlayers())
+                        updateScorebord(pl);
                 }
             }, 0, 20L);
             this.launchTime = System.currentTimeMillis();
@@ -96,6 +106,8 @@ public class QueueManager implements Listener {
     @EventHandler
     private void onPlayerQuit(PlayerQuitEvent e)
     {
+        if(isFinished && !started)
+            return;
         playerCount--;
         for(Player p : Bukkit.getOnlinePlayers())
             updateScorebord(p);

@@ -2,15 +2,19 @@ package api.events;
 
 import api.API;
 import api.events.listener.PlayerEvents;
+import api.events.listener.SpectatorEvents;
+import org.bukkit.Server;
+import org.bukkit.plugin.PluginManager;
 
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class EventsRegisterer {
+public class EventsRegisterer
+{
 
     public API main;
-
     public PlayerEvents playerEvents;
+    public SpectatorEvents spectatorEvents;
 
     public EventsRegisterer(API main)
     {
@@ -19,6 +23,8 @@ public class EventsRegisterer {
 
     public void init()
     {
-        this.main.getPlugin().getServer().getPluginManager().registerEvents(playerEvents = new PlayerEvents(this), this.main.getPlugin());
+        PluginManager pm = this.main.getPlugin().getServer().getPluginManager();
+        pm.registerEvents(playerEvents = new PlayerEvents(this), this.main.getPlugin());
+        pm.registerEvents(spectatorEvents = new SpectatorEvents(this), this.main.getPlugin());
     }
 }

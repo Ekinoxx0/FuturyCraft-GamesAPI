@@ -6,7 +6,8 @@ import org.bukkit.inventory.Inventory;
 /**
  * Created by loucass003 on 24/11/16.
  */
-public class Source {
+public class Source
+{
     private Button button;
     private Inventory inventory;
 

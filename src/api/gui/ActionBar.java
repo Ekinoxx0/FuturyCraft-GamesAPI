@@ -8,7 +8,8 @@ import org.bukkit.entity.Player;
 /**
  * Created by loucass003 on 20/11/16.
  */
-class ActionBar {
+class ActionBar
+{
 
     private String text;
 
@@ -21,12 +22,14 @@ class ActionBar {
         return text;
     }
 
-    public ActionBar setText(String text) {
+    public ActionBar setText(String text)
+    {
         this.text = text;
         return this;
     }
 
-    public void send(Player p) {
+    public void send(Player p)
+    {
         PacketPlayOutChat packet = new PacketPlayOutChat(ChatSerializer.a("{\"text\":\"" + text + "\"}"), (byte) 2);
         ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
     }

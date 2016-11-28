@@ -6,12 +6,14 @@ import api.events.EventsRegisterer;
 import api.events.listener.GuiManager;
 import api.events.listener.QueueManager;
 import api.utils.Config;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 /**
  * Created by loucass003 on 25/11/16
  */
-public class API {
+public class API
+{
 
     public static API instance;
     private Plugin plugin;
@@ -99,5 +101,23 @@ public class API {
 
     public void useQueueManager(boolean useQueueManager) {
         this.useQueueManager = useQueueManager;
+    }
+
+    public static void setSpectator(Player e)
+    {
+        getInstance().eventsRegisterer.spectatorEvents.setSpectator(e);
+    }
+
+    public static void remSpectator(Player e)
+    {
+        getInstance().eventsRegisterer.spectatorEvents.remSpectator(e);
+    }
+
+    public static boolean isSpectator(Player p)
+    {
+        for(Player o : getInstance().eventsRegisterer.spectatorEvents.players)
+            if(o.equals(p))
+                return true;
+        return false;
     }
 }

@@ -12,13 +12,14 @@ import org.bukkit.entity.Player;
 /**
  * Created by loucass003 on 20/11/16.
  */
-public class Title {
+public class Title
+{
 
-    private class TitleData {
+    private class TitleData
+    {
         public String text;
         public String color;
     }
-
 
     private int fadeIn;
     private int fadeOut;
@@ -52,27 +53,32 @@ public class Title {
         this("", ChatColor.WHITE, 5, 20, 5);
     }
 
-    public Title setFadeIn(int fadeIn) {
+    public Title setFadeIn(int fadeIn)
+    {
         this.fadeIn = fadeIn;
         return this;
     }
 
-    public Title setFadeOut(int fadeOut) {
+    public Title setFadeOut(int fadeOut)
+    {
         this.fadeOut = fadeOut;
         return this;
     }
 
-    public Title setStay(int stay) {
+    public Title setStay(int stay)
+    {
         this.stay = stay;
         return this;
     }
 
-    public Title setText(String text) {
+    public Title setText(String text)
+    {
         this.data.text = text;
         return this;
     }
 
-    public Title setColor(ChatColor color) {
+    public Title setColor(ChatColor color)
+    {
         this.data.color = color.name().toLowerCase();
         return this;
     }

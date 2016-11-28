@@ -9,20 +9,24 @@ import java.lang.reflect.Field;
 /**
  * Created by loucass003 on 21/11/16.
  */
-public class ScoreboardSign {
+public class ScoreboardSign
+{
+
     private boolean created = false;
     private final String[] lines = new String[16];
     private final Player player;
     private String objectiveName;
 
-    public ScoreboardSign(Player player, String objectiveName) {
+    public ScoreboardSign(Player player, String objectiveName)
+    {
         this.player = player;
         this.objectiveName = objectiveName;
     }
 
-    public void create() {
-        if (created) return;
-
+    public void create()
+    {
+        if (created)
+            return;
         PlayerConnection player = getPlayer();
         player.sendPacket(createObjectivePacket(0, objectiveName));
         player.sendPacket(setObjectiveSlot());
@@ -33,12 +37,11 @@ public class ScoreboardSign {
         created = true;
     }
 
-    public void destroy() {
+    public void destroy()
+    {
         if (!created)
             return;
-
         getPlayer().sendPacket(createObjectivePacket(1, null));
-
         created = false;
     }
 
@@ -46,7 +49,8 @@ public class ScoreboardSign {
         return ((CraftPlayer) player).getHandle().playerConnection;
     }
 
-    private void sendLine(int line) {
+    private void sendLine(int line)
+    {
         if (line > 15)
             return;
         if (line < 0)
@@ -65,7 +69,8 @@ public class ScoreboardSign {
             getPlayer().sendPacket(createObjectivePacket(2, name));
     }
 
-    public void setLine(int line, String value) {
+    public void setLine(int line, String value)
+    {
         String oldLine = getLine(line);
         if (oldLine != null && created)
             getPlayer().sendPacket(removeLine(oldLine));
@@ -74,15 +79,16 @@ public class ScoreboardSign {
         sendLine(line);
     }
 
-    public void removeLine(int line) {
+    public void removeLine(int line)
+    {
         String oldLine = getLine(line);
         if (oldLine != null && created)
             getPlayer().sendPacket(removeLine(oldLine));
-
         lines[line] = null;
     }
 
-    private String getLine(int line) {
+    private String getLine(int line)
+    {
         if (line > 15)
             return null;
         if (line < 0)
@@ -90,7 +96,8 @@ public class ScoreboardSign {
         return lines[line];
     }
 
-    private PacketPlayOutScoreboardObjective createObjectivePacket(int mode, String displayName) {
+    private PacketPlayOutScoreboardObjective createObjectivePacket(int mode, String displayName)
+    {
         PacketPlayOutScoreboardObjective packet = new PacketPlayOutScoreboardObjective();
         try {
             Field name = packet.getClass().getDeclaredField("a");
@@ -100,7 +107,8 @@ public class ScoreboardSign {
             modeField.setAccessible(true);
             modeField.set(packet, mode);
 
-            if (mode == 0 || mode == 2) {
+            if (mode == 0 || mode == 2)
+            {
                 Field displayNameField = packet.getClass().getDeclaredField("b");
                 displayNameField.setAccessible(true);
                 displayNameField.set(packet, displayName);
@@ -116,7 +124,8 @@ public class ScoreboardSign {
         return packet;
     }
 
-    private PacketPlayOutScoreboardDisplayObjective setObjectiveSlot() {
+    private PacketPlayOutScoreboardDisplayObjective setObjectiveSlot()
+    {
         PacketPlayOutScoreboardDisplayObjective packet = new PacketPlayOutScoreboardDisplayObjective();
         try {
             Field position = packet.getClass().getDeclaredField("a");
@@ -132,7 +141,8 @@ public class ScoreboardSign {
         return packet;
     }
 
-    private PacketPlayOutScoreboardScore sendScore(String line, int score) {
+    private PacketPlayOutScoreboardScore sendScore(String line, int score)
+    {
         PacketPlayOutScoreboardScore packet = new PacketPlayOutScoreboardScore(line);
         try {
             Field name = packet.getClass().getDeclaredField("b");

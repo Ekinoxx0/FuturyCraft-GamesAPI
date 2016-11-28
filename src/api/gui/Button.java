@@ -12,7 +12,8 @@ import java.util.List;
 /**
  * Created by loucass003 on 23/11/16.
  */
-public class Button {
+public class Button
+{
 
     private int x;
     private int y;

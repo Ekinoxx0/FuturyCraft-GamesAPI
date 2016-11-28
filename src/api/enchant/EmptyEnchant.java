@@ -8,7 +8,8 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Created by loucass003 on 24/11/16.
  */
-public class EmptyEnchant extends Enchantment {
+public class EmptyEnchant extends Enchantment
+{
 
     public EmptyEnchant(int id) {
         super(id);

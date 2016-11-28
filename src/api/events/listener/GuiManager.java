@@ -3,7 +3,7 @@ package api.events.listener;
 import api.API;
 import api.gui.Gui;
 import api.gui.Source;
-import api.interfaces.ActionListner;
+import api.interfaces.ActionListener;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,7 +15,8 @@ import java.util.List;
 /**
  * Created by loucass003 on 23/11/16.
  */
-public class GuiManager implements Listener {
+public class GuiManager implements Listener
+{
 
     private List<Gui> menus = new ArrayList<>();
     private API main;
@@ -39,7 +40,7 @@ public class GuiManager implements Listener {
             return;
         e.setCancelled(true);
         g.buttonList.stream().filter(b -> b.getCase() == e.getSlot()).forEach(b -> {
-            for (ActionListner a : g.getActionListners()) {
+            for (ActionListener a : g.getActionListners()) {
                 Source s = new Source(b, e.getInventory(), (Player)e.getWhoClicked());
                 a.actionPerformed(s);
             }

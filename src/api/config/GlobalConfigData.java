@@ -3,7 +3,8 @@ package api.config;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class GlobalConfigData {
+public class GlobalConfigData
+{
 
     public ConfigLocation spawn;
 

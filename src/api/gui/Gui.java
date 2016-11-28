@@ -1,6 +1,6 @@
 package api.gui;
 
-import api.interfaces.ActionListner;
+import api.interfaces.ActionListener;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -11,13 +11,13 @@ import java.util.List;
 /**
  * Created by loucass003 on 23/11/16.
  */
-public class Gui {
-
+public class Gui
+{
     public int lines;
     public String name;
     public Inventory inventory;
     public List<Button> buttonList = new ArrayList<>();
-    protected List<ActionListner> actionListners = new ArrayList<>();
+    protected List<ActionListener> actionListners = new ArrayList<>();
 
     public Gui(String name, int lines)
     {
@@ -65,7 +65,7 @@ public class Gui {
         return buttonList;
     }
 
-    public List<ActionListner> getActionListners() {
+    public List<ActionListener> getActionListners() {
         return actionListners;
     }
 
@@ -73,7 +73,7 @@ public class Gui {
         return lines;
     }
 
-    public void addActionListner(ActionListner a)
+    public void addActionListner(ActionListener a)
     {
         this.actionListners.add(a);
     }

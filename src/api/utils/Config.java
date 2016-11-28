@@ -14,7 +14,8 @@ import java.io.IOException;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class Config {
+public class Config
+{
 
     private String name;
     private String filename;
@@ -46,14 +47,15 @@ public class Config {
             if(!p.getDataFolder().exists())
                 p.getLogger().info("Creation du dossier de config : " + (p.getDataFolder().mkdir() ? "ok" : "erreur") + " !");
             File f = new File(p.getDataFolder(), filename);
-            if(!f.exists()) {
+            if(!f.exists())
                 p.getLogger().info("Creation du ficher de config : " + (f.createNewFile() ? "ok" : "erreur") + " !");
-            }
             String json = Utils.readFile(f);
             configData = new Gson().fromJson(json, clazz);
             if(configData == null)
                 configData = clazz.newInstance();
-        } catch (IOException | InstantiationException | IllegalAccessException e) {
+        }
+        catch (IOException | InstantiationException | IllegalAccessException e)
+        {
             e.printStackTrace();
         }
     }

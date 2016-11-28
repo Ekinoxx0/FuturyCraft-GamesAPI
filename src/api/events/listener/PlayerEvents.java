@@ -9,7 +9,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class PlayerEvents implements Listener {
+public class PlayerEvents implements Listener
+{
 
     public EventsRegisterer registerer;
     public API main;

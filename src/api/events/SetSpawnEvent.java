@@ -9,8 +9,8 @@ import org.bukkit.event.HandlerList;
 /**
  * Created by loucass003 on 26/11/16.
  */
-public class SetSpawnEvent extends Event implements Cancellable {
-
+public class SetSpawnEvent extends Event implements Cancellable
+{
     private final HandlerList handlers = new HandlerList();
     private boolean cancelled;
     private Player player;
