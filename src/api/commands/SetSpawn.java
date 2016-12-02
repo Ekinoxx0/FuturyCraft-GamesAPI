@@ -45,7 +45,7 @@ public class SetSpawn extends BukkitCommand
         }
 
         SetSpawnEvent se = new SetSpawnEvent(sender, sender.getLocation());
-        API.getInstance().getPlugin().getServer().getPluginManager().callEvent(se);
+        API.getInstance().getServer().getPluginManager().callEvent(se);
         if(!se.isCancelled())
         {
             Vector loc = se.getLocation().toVector();

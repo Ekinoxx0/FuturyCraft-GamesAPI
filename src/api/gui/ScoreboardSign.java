@@ -1,7 +1,7 @@
 package api.gui;
 
-import net.minecraft.server.v1_8_R1.*;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_9_R1.*;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
@@ -115,7 +115,7 @@ public class ScoreboardSign
 
                 Field display = packet.getClass().getDeclaredField("c");
                 display.setAccessible(true);
-                display.set(packet, EnumScoreboardHealthDisplay.INTEGER);
+                display.set(packet, IScoreboardCriteria.EnumScoreboardHealthDisplay.INTEGER);
             }
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
@@ -155,7 +155,7 @@ public class ScoreboardSign
 
             Field action = packet.getClass().getDeclaredField("d");
             action.setAccessible(true);
-            action.set(packet, EnumScoreboardAction.CHANGE);
+            action.set(packet, PacketPlayOutScoreboardScore.EnumScoreboardAction.CHANGE);
         } catch (NoSuchFieldException | IllegalAccessException e) {
             e.printStackTrace();
         }

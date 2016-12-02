@@ -1,11 +1,10 @@
 package api.utils;
 
-import api.API;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.libs.com.google.gson.GsonBuilder;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonElement;
-import org.bukkit.craftbukkit.libs.com.google.gson.JsonParser;
-import org.bukkit.craftbukkit.libs.com.google.gson.internal.Primitives;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+import com.google.gson.internal.Primitives;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -16,18 +15,17 @@ import java.io.IOException;
  */
 public class Config
 {
-
     private String name;
     private String filename;
     private Object configData;
     private Class clazz;
     private Plugin p;
 
-    public Config(String name)
+    public Config(String name, Plugin p)
     {
         this.name = name;
         this.filename = name + ".json";
-        this.p = API.instance.getPlugin();
+        this.p = p;
     }
 
     public void setConfigObject(Class classOfT)

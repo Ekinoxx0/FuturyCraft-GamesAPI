@@ -1,8 +1,8 @@
 package api.gui;
 
-import net.minecraft.server.v1_8_R1.ChatSerializer;
-import net.minecraft.server.v1_8_R1.PacketPlayOutChat;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.PacketPlayOutChat;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -30,7 +30,7 @@ class ActionBar
 
     public void send(Player p)
     {
-        PacketPlayOutChat packet = new PacketPlayOutChat(ChatSerializer.a("{\"text\":\"" + text + "\"}"), (byte) 2);
+        PacketPlayOutChat packet = new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a("{\"text\":\"" + text + "\"}"), (byte) 2);
         ((CraftPlayer)p).getHandle().playerConnection.sendPacket(packet);
     }
 

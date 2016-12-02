@@ -23,8 +23,8 @@ public class EventsRegisterer
 
     public void init()
     {
-        PluginManager pm = this.main.getPlugin().getServer().getPluginManager();
-        pm.registerEvents(playerEvents = new PlayerEvents(this), this.main.getPlugin());
-        pm.registerEvents(spectatorEvents = new SpectatorEvents(this), this.main.getPlugin());
+        PluginManager pm = this.main.getServer().getPluginManager();
+        pm.registerEvents(playerEvents = new PlayerEvents(this), this.main);
+        pm.registerEvents(spectatorEvents = new SpectatorEvents(this), this.main);
     }
 }

@@ -22,6 +22,11 @@ public class ConfigLocation
         this.orientation = orientation;
     }
 
+    public ConfigLocation(Location loc)
+    {
+        this(loc.getWorld().getName(), loc.toVector(), loc.getDirection().toBlockVector());
+    }
+
     public ConfigLocation()
     {
         this(null, null, null);
@@ -31,7 +36,7 @@ public class ConfigLocation
     {
         if(this.world == null)
             return null;
-        World w = API.getInstance().getPlugin().getServer().getWorld(this.world);
+        World w = API.getInstance().getServer().getWorld(this.world);
         if(w == null)
             return null;
         Location l = new Location(w, pos.getX(), pos.getY(), pos.getZ());

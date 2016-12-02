@@ -8,15 +8,15 @@ import api.events.listener.QueueManager;
 import api.utils.Config;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by loucass003 on 25/11/16
  */
-public class API
+public class API extends JavaPlugin
 {
 
     public static API instance;
-    private Plugin plugin;
     private GuiManager guiManager;
     private QueueManager queueManager;
     private CommandsManager commandsManager;
@@ -31,17 +31,17 @@ public class API
 
     private boolean useQueueManager = true;
 
-    public API(Plugin plugin)
+    public API()
     {
         instance = this;
-        this.plugin = plugin;
-        this.configManager = new Config("Global");
+        this.configManager = new Config("Global", this);
         this.configManager.setConfigObject(GlobalConfigData.class);
         this.commandsManager = new CommandsManager(this);
         this.eventsRegisterer = new EventsRegisterer(this);
     }
 
-    public void init()
+    @Override
+    public void onEnable()
     {
         this.configManager.loadConfig();
         this.globalConfig = configManager.get(GlobalConfigData.class);
@@ -50,17 +50,14 @@ public class API
         if(this.useQueueManager)
             this.queueManager = new QueueManager(maxPlayers, minPlayers, countdown);
         this.guiManager = new GuiManager(this);
-
     }
 
-    public void unload()
+    @Override
+    public void onDisable()
     {
         if(this.queueManager != null)
             this.queueManager.clear();
-    }
-
-    public Plugin getPlugin() {
-        return plugin;
+        this.eventsRegisterer.spectatorEvents.clearSpectators();
     }
 
     public void setCountdown(Long countdown) {
@@ -79,7 +76,8 @@ public class API
         return guiManager;
     }
 
-    public static API getInstance() {
+    public static API getInstance()
+    {
         return instance;
     }
 
@@ -87,7 +85,8 @@ public class API
         return queueManager;
     }
 
-    public GlobalConfigData getGlobalConfig() {
+    public GlobalConfigData getGlobalConfig()
+    {
         return globalConfig;
     }
 
@@ -99,8 +98,16 @@ public class API
         return eventsRegisterer;
     }
 
-    public void useQueueManager(boolean useQueueManager) {
+    public void useQueueManager(boolean useQueueManager)
+    {
         this.useQueueManager = useQueueManager;
+        if(!useQueueManager && this.queueManager != null)
+        {
+            this.queueManager.clear();
+            this.queueManager = null;
+        }
+        else if (useQueueManager && this.queueManager == null)
+            this.queueManager = new QueueManager(maxPlayers, minPlayers, countdown);
     }
 
     public static void setSpectator(Player e)
@@ -115,9 +122,6 @@ public class API
 
     public static boolean isSpectator(Player p)
     {
-        for(Player o : getInstance().eventsRegisterer.spectatorEvents.players)
-            if(o.equals(p))
-                return true;
-        return false;
+        return getInstance().eventsRegisterer.spectatorEvents.players.contains(p);
     }
 }

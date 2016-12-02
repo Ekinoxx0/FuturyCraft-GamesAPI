@@ -24,7 +24,7 @@ public class GuiManager implements Listener
     public GuiManager(API main)
     {
         this.main = main;
-        API.instance.getPlugin().getServer().getPluginManager().registerEvents(this, API.instance.getPlugin());
+        this.main.getServer().getPluginManager().registerEvents(this, this.main);
     }
 
     public void addGui(Gui g)

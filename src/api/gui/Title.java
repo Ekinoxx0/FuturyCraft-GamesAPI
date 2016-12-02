@@ -1,12 +1,10 @@
 package api.gui;
 
-import net.minecraft.server.v1_8_R1.ChatSerializer;
-import net.minecraft.server.v1_8_R1.EnumTitleAction;
-import net.minecraft.server.v1_8_R1.IChatBaseComponent;
-import net.minecraft.server.v1_8_R1.PacketPlayOutTitle;
+import com.google.gson.Gson;
+import net.minecraft.server.v1_9_R1.IChatBaseComponent;
+import net.minecraft.server.v1_9_R1.PacketPlayOutTitle;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.libs.com.google.gson.Gson;
-import org.bukkit.craftbukkit.v1_8_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -92,17 +90,17 @@ public class Title
     public void sendTitle(Player p)
     {
         if(this.sub != null)
-            this.sub.sendTitle(EnumTitleAction.SUBTITLE, p);
-        this.sendTitle(EnumTitleAction.TITLE, p);
+            this.sub.sendTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, p);
+        this.sendTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, p);
     }
 
-    private void sendTitle(EnumTitleAction type, Player p)
+    private void sendTitle(PacketPlayOutTitle.EnumTitleAction type, Player p)
     {
-        IChatBaseComponent chatTitle = ChatSerializer.a(new Gson().toJson(this.data));
+        IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a(new Gson().toJson(this.data));
         PacketPlayOutTitle title = new PacketPlayOutTitle(type, chatTitle);
         PacketPlayOutTitle length = new PacketPlayOutTitle(this.fadeIn, this.stay, this.fadeOut);
         ((CraftPlayer)p).getHandle().playerConnection.sendPacket(title);
-        if(type == EnumTitleAction.TITLE)
+        if(type == PacketPlayOutTitle.EnumTitleAction.TITLE)
             ((CraftPlayer)p).getHandle().playerConnection.sendPacket(length);
     }
 }
