@@ -42,6 +42,7 @@ public class SpectatorEvents implements Listener
             this.ghost.unregister();
         this.ghost = sc.registerNewTeam("Ghosts");
         this.ghost.setCanSeeFriendlyInvisibles(true);
+        this.ghost.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
         this.ghost.setPrefix(ChatColor.GRAY.toString());
     }
 
@@ -53,7 +54,6 @@ public class SpectatorEvents implements Listener
         p.setAllowFlight(true);
         p.setFlying(true);
         p.setFlySpeed(0.3F);
-        p.setCollidable(false);
         p.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, false, false));
         ghost.addEntry(p.getName());
         players.add(p);
@@ -65,7 +65,6 @@ public class SpectatorEvents implements Listener
             return;
         p.setAllowFlight(false);
         p.setFlying(false);
-        p.setCollidable(true);
         p.setFlySpeed(0.1F);
         p.removePotionEffect(PotionEffectType.INVISIBILITY);
         ghost.removeEntry(p.getName());
