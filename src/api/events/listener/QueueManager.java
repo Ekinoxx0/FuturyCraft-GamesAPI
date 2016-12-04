@@ -58,6 +58,7 @@ public class QueueManager implements Listener
         Bukkit.getOnlinePlayers().forEach(this::updateScoreboard);
         if(playerCount >= this.minPlayers && !started && !isFinished)
         {
+            this.launchTime = System.currentTimeMillis();
             threadId = Bukkit.getScheduler().scheduleSyncRepeatingTask(API.getInstance(), () ->
             {
                 if(started)
@@ -90,7 +91,7 @@ public class QueueManager implements Listener
                     Bukkit.getOnlinePlayers().forEach(this::updateScoreboard);
                 }
             }, 0, 20L);
-            this.launchTime = System.currentTimeMillis();
+
             this.started = true;
         }
     }
