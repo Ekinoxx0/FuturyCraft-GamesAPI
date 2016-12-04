@@ -40,11 +40,11 @@ public class Region
         if(blocks != null)
             return blocks;
         blocks = new ArrayList<>();
-        for (int x = 0; x < size.getBlockX(); x++)
+        for (int x = 0; x <= size.getBlockX(); x++)
         {
-            for (int y = 0; y < size.getBlockY(); y++)
+            for (int y = 0; y <= size.getBlockY(); y++)
             {
-                for (int z = 0; z < size.getBlockZ(); z++)
+                for (int z = 0; z <= size.getBlockZ(); z++)
                     blocks.add(min.toLocation(w).add(x, y, z).getBlock());
             }
         }
