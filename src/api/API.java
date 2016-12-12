@@ -29,7 +29,7 @@ public class API extends JavaPlugin
     private Config configManager;
     private GlobalConfigData globalConfig;
 
-    private boolean useQueueManager = true;
+    private boolean useQueueManager = false;
 
     public API()
     {
@@ -108,6 +108,10 @@ public class API extends JavaPlugin
         }
         else if (useQueueManager && this.queueManager == null)
             this.queueManager = new QueueManager(maxPlayers, minPlayers, countdown);
+    }
+
+    public boolean isUseQueueManager() {
+        return useQueueManager;
     }
 
     public static void setSpectator(Player e)

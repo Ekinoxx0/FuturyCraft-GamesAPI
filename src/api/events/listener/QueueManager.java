@@ -55,6 +55,8 @@ public class QueueManager implements Listener
 
     public void checkPlayers()
     {
+        if(!API.getInstance().isUseQueueManager())
+            return;
         Bukkit.getOnlinePlayers().forEach(this::updateScoreboard);
         if(playerCount >= this.minPlayers && !started && !isFinished)
         {

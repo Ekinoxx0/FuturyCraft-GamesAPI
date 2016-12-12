@@ -7,6 +7,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerGameModeChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -89,7 +90,7 @@ public class SpectatorEvents implements Listener
             e.setCancelled(true);
     }
 
-    @EventHandler
+    @EventHandler (priority = EventPriority.HIGH)
     public void onPlayerToggleFlight(PlayerToggleFlightEvent e)
     {
         if(API.isSpectator(e.getPlayer()))
