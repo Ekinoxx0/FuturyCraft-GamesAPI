@@ -1,0 +1,5 @@
+name: FcApi
+version: 0.0.1
+author: loucass003
+description: Api praincipale de Fc
+main: api.API
