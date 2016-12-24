@@ -3,7 +3,6 @@ package api.events.listener;
 import api.API;
 import api.config.ConfigLocation;
 import api.events.EventsRegisterer;
-import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;

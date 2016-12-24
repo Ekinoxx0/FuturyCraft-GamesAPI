@@ -7,7 +7,6 @@ import api.events.listener.GuiManager;
 import api.events.listener.QueueManager;
 import api.utils.Config;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
