@@ -16,6 +16,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerToggleFlightEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scoreboard.NameTagVisibility;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
@@ -45,7 +46,7 @@ public class SpectatorEvents implements Listener
             this.ghost.unregister();
         this.ghost = sc.registerNewTeam("Ghosts");
         this.ghost.setCanSeeFriendlyInvisibles(true);
-        this.ghost.setOption(Team.Option.COLLISION_RULE, Team.OptionStatus.NEVER);
+        this.ghost.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
         this.ghost.setPrefix(ChatColor.GRAY.toString());
     }
 

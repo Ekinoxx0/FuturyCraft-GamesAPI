@@ -151,14 +151,14 @@ public class MessengerConnection
 	public void sendPacket(OutPacket packet, short transactionID) throws IOException
 	{
 		ByteArrayOutputStream array = new ByteArrayOutputStream();
-		DataOutputStream data = new DataOutputStream(new ByteArrayOutputStream());
+		DataOutputStream data = new DataOutputStream(array);
 		packet.write(data);
 
 		synchronized (out)
 		{
-			out.write(Packets.getID(packet.getClass()));
-			out.write(transactionID);
-			out.write(array.size());
+			out.writeByte(Packets.getID(packet.getClass()));
+			out.writeShort(transactionID);
+			out.writeShort(array.size());
 			out.write(array.toByteArray());
 			out.flush();
 		}

@@ -5,6 +5,7 @@ import api.config.GlobalConfigData;
 import api.events.EventsRegisterer;
 import api.events.listener.GuiManager;
 import api.events.listener.QueueManager;
+import api.packet.MessengerConnection;
 import api.utils.Config;
 import lombok.Data;
 import lombok.Getter;
@@ -23,6 +24,8 @@ public class API extends JavaPlugin
     private QueueManager queueManager;
     private CommandsManager commandsManager;
     private EventsRegisterer eventsRegisterer;
+	private MessengerConnection messenger;
+	private KeepAliveService keepAliveService;
 
     private int maxPlayers;
     private int minPlayers;
@@ -40,6 +43,7 @@ public class API extends JavaPlugin
         this.configManager.setConfigObject(GlobalConfigData.class);
         this.commandsManager = new CommandsManager(this);
         this.eventsRegisterer = new EventsRegisterer(this);
+        this.keepAliveService = new KeepAliveService(this);
     }
 
     @Override
@@ -47,6 +51,8 @@ public class API extends JavaPlugin
     {
         this.configManager.loadConfig();
         this.globalConfig = configManager.get(GlobalConfigData.class);
+		this.messenger = new MessengerConnection(globalConfig.getDeployer().getSocketHost(), globalConfig.getDeployer().getSocketPort());
+		this.keepAliveService.init();
         this.commandsManager.registerCommands();
         this.eventsRegisterer.init();
         if(this.useQueueManager)
@@ -61,7 +67,6 @@ public class API extends JavaPlugin
             this.queueManager.clear();
         this.eventsRegisterer.getSpectatorEvents().clearSpectators();
     }
-
 
     public static API getInstance()
     {

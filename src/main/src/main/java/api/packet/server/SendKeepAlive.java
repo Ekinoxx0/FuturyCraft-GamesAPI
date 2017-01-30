@@ -10,7 +10,6 @@ import java.io.IOException;
  * Created by loucass003 on 07/12/16.
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 public class SendKeepAlive extends OutPacket
 {
 	private final long freeMemory;
