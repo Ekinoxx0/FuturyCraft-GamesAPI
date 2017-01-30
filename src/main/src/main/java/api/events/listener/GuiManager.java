@@ -27,11 +27,6 @@ public class GuiManager implements Listener
         this.main.getServer().getPluginManager().registerEvents(this, this.main);
     }
 
-    public void addGui(Gui g)
-    {
-        this.menus.add(g);
-    }
-
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e)
     {
@@ -39,7 +34,7 @@ public class GuiManager implements Listener
         if(g == null)
             return;
         e.setCancelled(true);
-        g.buttonList.stream().filter(b -> b.getCase() == e.getSlot()).forEach(b -> {
+        g.buttonList.stream().filter(b -> b.getCase() == e.getSlot() && e.getClickedInventory() == g.getInventory()).forEach(b -> {
             for (ActionListener a : g.getActionListners()) {
                 Source s = new Source(b, e.getInventory(), (Player)e.getWhoClicked());
                 a.actionPerformed(s);
@@ -54,6 +49,7 @@ public class GuiManager implements Listener
         if(g == null)
             return;
         g.onExit();
+        this.menus.remove(g);
     }
 
     @EventHandler
@@ -83,9 +79,10 @@ public class GuiManager implements Listener
         e.setCancelled(true);
     }
 
-    public void openGui(String name, Player p)
+    public void openGui(Gui gui, Player p)
     {
-        menus.stream().filter(g -> g.getName().equals(name)).forEach(g -> g.openGui(p));
+        this.menus.add(gui);
+        gui.openGui(p);
     }
 
     public Gui getGui(String name)
