@@ -1,25 +1,20 @@
 package api.config;
 
 import api.API;
+import lombok.Data;
 
 /**
  * Created by loucass003 on 26/11/16.
  */
+@Data
 public class GlobalConfigData
 {
-
-    public ConfigLocation spawn;
+    private ConfigDeployer deployer;
+	private ConfigLocation spawn;
 
     public GlobalConfigData()
     {
+        deployer = new ConfigDeployer("localhost", 5555);
         spawn = new ConfigLocation(API.getInstance().getServer().getWorlds().get(0).getSpawnLocation());
-    }
-
-    public ConfigLocation getSpawn() {
-        return spawn;
-    }
-
-    public void setSpawn(ConfigLocation spawn) {
-        this.spawn = spawn;
     }
 }

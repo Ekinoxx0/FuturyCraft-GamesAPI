@@ -1,9 +1,6 @@
 package api.packet;
 
-import api.packet.players.RequestPlayerData;
-import api.packet.players.SendPlayerData;
-import api.packet.server.RequestTPS;
-import api.packet.server.SendTPS;
+import api.packet.server.SendKeepAlive;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -14,12 +11,12 @@ import java.io.IOException;
 public enum Packets
 {
 	// OUTGOING - Bungee-bound
-	SEND_PLAYER_DATA((byte) 0x00, false, SendPlayerData.class),
-	SEND_TPS((byte) 0x01, false, SendTPS.class),
+	KEEP_ALIVE((byte) 0x00, false, SendKeepAlive.class);
+	//SEND_PLAYER_DATA((byte) 0x01, false, SendPlayerData.class),
+
 
 	// INCOMING - Spigot-bound
-	REQUEST_PLAYER_DATA((byte) 0x00, true, RequestPlayerData.class),
-	REQUEST_TPS((byte) 0x01, true, RequestTPS.class);
+	//REQUEST_PLAYER_DATA((byte) 0x00, true, RequestPlayerData.class),
 
 	private final byte id;
 	private final boolean in;

@@ -40,11 +40,8 @@ public class MessengerConnection
 		}
 		catch (IOException e)
 		{
-			API.getInstance().getLogger().log(Level.SEVERE, "Error while creating the ServerSocket (Connection: " + this
-					+ ")", e);
-
+			API.getInstance().getLogger().log(Level.SEVERE, "Error while creating the ServerSocket (Connection: " + this + ")", e);
 			Bukkit.shutdown(); //Stop because this server is not usable now
-
 			throw new IllegalStateException(e);
 		}
 	}

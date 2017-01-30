@@ -1,6 +1,7 @@
 package api.config;
 
 import api.API;
+import lombok.Data;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
@@ -8,12 +9,12 @@ import org.bukkit.util.Vector;
 /**
  * Created by loucass003 on 26/11/16.
  */
+@Data
 public class ConfigLocation
 {
-
-    public Vector pos;
-    public Vector orientation;
-    public String world;
+    private Vector pos;
+    private Vector orientation;
+    private String world;
 
     public ConfigLocation(String world, Vector pos, Vector orientation)
     {
@@ -44,5 +45,4 @@ public class ConfigLocation
             l.setDirection(this.orientation);
         return l;
     }
-
 }
