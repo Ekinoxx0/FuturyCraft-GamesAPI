@@ -1,6 +1,5 @@
 package api.packet;
 
-
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
@@ -40,14 +39,16 @@ public class PacketReceivedEvent extends Event
 	@Override
 	public boolean equals(Object o)
 	{
-		if (this == o) return true;
-		if (o == null || getClass() != o.getClass()) return false;
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
 
 		PacketReceivedEvent that = (PacketReceivedEvent) o;
 
-		if (transactionID != that.transactionID) return false;
+		if (transactionID != that.transactionID)
+			return false;
 		return packet != null ? packet.equals(that.packet) : that.packet == null;
-
 	}
 
 	@Override

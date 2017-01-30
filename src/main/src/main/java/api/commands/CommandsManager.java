@@ -9,7 +9,6 @@ import org.bukkit.craftbukkit.v1_9_R1.CraftServer;
  */
 public class CommandsManager
 {
-
     public API main;
 
     public CommandsManager(API main)
@@ -26,5 +25,4 @@ public class CommandsManager
     {
         ((CraftServer)main.getServer()).getCommandMap().register(name, c);
     }
-
 }

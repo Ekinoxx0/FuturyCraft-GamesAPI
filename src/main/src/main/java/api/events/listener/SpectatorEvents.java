@@ -2,6 +2,7 @@ package api.events.listener;
 
 import api.API;
 import api.events.EventsRegisterer;
+import lombok.Data;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -24,19 +25,20 @@ import java.util.List;
 /**
  * Created by loucass003 on 27/11/16.
  */
+@Data
 public class SpectatorEvents implements Listener
 {
 
-    public EventsRegisterer registerer;
-    public API main;
+    private EventsRegisterer registerer;
+    private API main;
 
-    public List<Player> players = new ArrayList<>();
-    public Team ghost;
+    private List<Player> players = new ArrayList<>();
+    private Team ghost;
 
     public SpectatorEvents(EventsRegisterer er)
     {
         this.registerer = er;
-        this.main = er.main;
+        this.main = er.getMain();
         Scoreboard sc = this.main.getServer().getScoreboardManager().getMainScoreboard();
         this.ghost = sc.getTeam("Ghosts");
         if(this.ghost != null)

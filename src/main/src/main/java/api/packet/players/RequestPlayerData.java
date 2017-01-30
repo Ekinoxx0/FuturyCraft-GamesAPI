@@ -33,7 +33,6 @@ public class RequestPlayerData extends OutPacket
 	}
 
 	// UTILS
-
 	private static final Lock lock = new ReentrantLock();
 	private static final MessengerConnection CONNECTION = null;
 

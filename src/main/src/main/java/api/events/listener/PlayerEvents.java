@@ -19,7 +19,7 @@ public class PlayerEvents implements Listener
     public PlayerEvents(EventsRegisterer er)
     {
         this.registerer = er;
-        this.main = er.main;
+        this.main = er.getMain();
     }
 
     @EventHandler

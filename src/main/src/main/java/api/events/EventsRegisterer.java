@@ -3,18 +3,20 @@ package api.events;
 import api.API;
 import api.events.listener.PlayerEvents;
 import api.events.listener.SpectatorEvents;
+import lombok.Data;
 import org.bukkit.Server;
 import org.bukkit.plugin.PluginManager;
 
 /**
  * Created by loucass003 on 26/11/16.
  */
+@Data
 public class EventsRegisterer
 {
 
-    public API main;
-    public PlayerEvents playerEvents;
-    public SpectatorEvents spectatorEvents;
+    private API main;
+    private PlayerEvents playerEvents;
+    private SpectatorEvents spectatorEvents;
 
     public EventsRegisterer(API main)
     {
