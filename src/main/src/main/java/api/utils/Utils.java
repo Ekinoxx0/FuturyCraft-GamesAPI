@@ -1,11 +1,18 @@
 package api.utils;
 
+import com.google.common.primitives.Primitives;
+import com.google.gson.Gson;
+
 import java.io.*;
+import java.lang.reflect.Field;
+
 /**
  * Created by loucass003 on 26/11/16.
  */
 public class Utils
 {
+
+    public static final String NMS_PACKAGE = "net.minecraft.server";
 
     public static void writeText(File f, String content) {
 
@@ -51,5 +58,27 @@ public class Utils
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static <T> T getField(String fieldName, Class clazz, Object instance, Class<T> to, boolean isPrivate)
+    {
+        try
+        {
+            Field field = clazz.getDeclaredField(fieldName);
+            if(isPrivate)
+                field.setAccessible(true);
+            return Primitives.wrap(to).cast(field.get(instance));
+        }
+        catch(NoSuchFieldException | IllegalAccessException e)
+        {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static <T> T getPrivateField(String fieldName, Class clazz, Class<T> to)
+    {
+        return getField(fieldName, clazz, null, to, true);
     }
 }

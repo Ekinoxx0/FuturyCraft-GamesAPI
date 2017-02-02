@@ -34,7 +34,7 @@ public class GuiManager implements Listener
         if(g == null)
             return;
         e.setCancelled(true);
-        g.buttonList.stream().filter(b -> b.getCase() == e.getSlot() && e.getClickedInventory() == g.getInventory()).forEach(b -> {
+        g.buttonList.stream().filter(b -> b.getCase() == e.getSlot() && e.getClickedInventory().getName().equals(g.getName())).forEach(b -> {
             for (ActionListener a : g.getActionListners()) {
                 Source s = new Source(b, e.getInventory(), (Player)e.getWhoClicked());
                 a.actionPerformed(s);

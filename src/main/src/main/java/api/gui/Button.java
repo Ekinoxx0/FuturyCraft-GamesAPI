@@ -18,6 +18,8 @@ public class Button
     private int x;
     private int y;
     private Material material;
+    private int meta;
+    private int amount;
     private String name;
     private String desc;
     private boolean enchant;
@@ -31,6 +33,9 @@ public class Button
         this.enchant = enchant;
         this.x = x;
         this.y = y;
+
+        this.meta = 0;
+        this.amount = 1;
     }
 
     public Button(Material m, String name, boolean enchant, int x, int y)
@@ -71,6 +76,16 @@ public class Button
         return desc;
     }
 
+    public int getAmount()
+    {
+        return amount;
+    }
+
+    public int getMeta()
+    {
+        return meta;
+    }
+
     public boolean isEnchant() {
         return enchant;
     }
@@ -95,6 +110,16 @@ public class Button
         this.lines = lines;
     }
 
+    public void setAmount(int amount)
+    {
+        this.amount = amount;
+    }
+
+    public void setMeta(int meta)
+    {
+        this.meta = meta;
+    }
+
     public List<String> getLines()
     {
         return this.lines;
@@ -111,7 +136,7 @@ public class Button
 
         if(c > i.getContents().length - 1)
             return;
-        ItemStack is = new ItemStack(this.getMaterial());
+        ItemStack is = new ItemStack(this.getMaterial(), this.amount, (short)this.meta);
         ItemMeta im = is.getItemMeta();
         im.setDisplayName(this.getName());
         List<String> lines = getLines();

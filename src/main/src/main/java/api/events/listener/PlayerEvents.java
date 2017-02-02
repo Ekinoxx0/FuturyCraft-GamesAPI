@@ -3,6 +3,7 @@ package api.events.listener;
 import api.API;
 import api.config.ConfigLocation;
 import api.events.EventsRegisterer;
+import lombok.Data;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -10,11 +11,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 /**
  * Created by loucass003 on 26/11/16.
  */
+@Data
 public class PlayerEvents implements Listener
 {
 
-    public EventsRegisterer registerer;
-    public API main;
+    private EventsRegisterer registerer;
+    private API main;
 
     public PlayerEvents(EventsRegisterer er)
     {

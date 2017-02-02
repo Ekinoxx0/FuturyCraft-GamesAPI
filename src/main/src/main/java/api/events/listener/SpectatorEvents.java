@@ -46,7 +46,7 @@ public class SpectatorEvents implements Listener
             this.ghost.unregister();
         this.ghost = sc.registerNewTeam("Ghosts");
         this.ghost.setCanSeeFriendlyInvisibles(true);
-        this.ghost.setNameTagVisibility(NameTagVisibility.HIDE_FOR_OTHER_TEAMS);
+        this.ghost.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
         this.ghost.setPrefix(ChatColor.GRAY.toString());
     }
 

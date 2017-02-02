@@ -32,7 +32,6 @@ public class KeepAliveService
 
 			try
 			{
-				System.out.println("SendKeepAlive");
 				getMain().getMessenger().sendPacket(new SendKeepAlive(freeMemory, totalMemory, cpuLoad, new byte[]{-0x01,-0x01,-0x01}));
 			}
 			catch (IOException e)
