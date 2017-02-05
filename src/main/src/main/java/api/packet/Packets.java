@@ -1,6 +1,9 @@
 package api.packet;
 
-import api.packet.server.SendKeepAlive;
+import api.packet.server.BossBarMessagesPacket;
+import api.packet.server.EndGameData;
+import api.packet.server.KeepAlivePacket;
+import api.packet.server.RequestBossBarMessages;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -11,12 +14,15 @@ import java.io.IOException;
 public enum Packets
 {
 	// OUTGOING - Bungee-bound
-	KEEP_ALIVE((byte) 0x00, false, SendKeepAlive.class);
-	//SEND_PLAYER_DATA((byte) 0x01, false, SendPlayerData.class),
-
+	KEEP_ALIVE((byte) 0x00, false, KeepAlivePacket.class),
+	SERVER_STATE_PACKET((byte) 0x01, false, KeepAlivePacket.class),
+	END_GAME_PACKET((byte) 0x02, false, EndGameData.class),
+	REQUEST_BB_MESSAGES((byte) 0x03, false, RequestBossBarMessages.class),
 
 	// INCOMING - Spigot-bound
-	//REQUEST_PLAYER_DATA((byte) 0x00, true, RequestPlayerData.class),
+	//REQUEST_PLAYER_DATA((byte) 0x00, true, RequestPlayerData.class);
+
+	BB_MESSAGES((byte) 0x02, true, BossBarMessagesPacket.class);
 
 	private final byte id;
 	private final boolean in;

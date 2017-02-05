@@ -10,7 +10,7 @@ import java.io.IOException;
  * Created by loucass003 on 07/12/16.
  */
 @Data
-public class SendKeepAlive extends OutPacket
+public class KeepAlivePacket extends OutPacket
 {
 	private final long freeMemory;
 	private final long totalMemory;

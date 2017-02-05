@@ -1,6 +1,6 @@
 package api;
 
-import api.packet.server.SendKeepAlive;
+import api.packet.server.KeepAlivePacket;
 import api.utils.concurrent.ThreadLoop;
 import api.utils.concurrent.ThreadLoops;
 import com.sun.management.OperatingSystemMXBean;
@@ -32,7 +32,7 @@ public class KeepAliveService
 
 			try
 			{
-				getMain().getMessenger().sendPacket(new SendKeepAlive(freeMemory, totalMemory, cpuLoad, new byte[]{-0x01,-0x01,-0x01}));
+				getMain().getMessenger().sendPacket(new KeepAlivePacket(freeMemory, totalMemory, cpuLoad, new byte[]{-0x01,-0x01,-0x01}));
 			}
 			catch (IOException e)
 			{

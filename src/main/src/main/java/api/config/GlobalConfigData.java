@@ -14,7 +14,7 @@ public class GlobalConfigData
 
     public GlobalConfigData()
     {
-        deployer = new ConfigDeployer("localhost", 5555);
+        deployer = new ConfigDeployer("localhost", 5555, false);
         spawn = new ConfigLocation(API.getInstance().getServer().getWorlds().get(0).getSpawnLocation());
     }
 }

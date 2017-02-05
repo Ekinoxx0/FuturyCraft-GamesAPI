@@ -15,12 +15,6 @@ public class NPCManager
 		NPCManager.register(CustomZombie.class, "zombie_test", "Zombie", 54);
 	}
 
-	/**
-	 * Register entity in EntityTypes
-	 * @param entityClass class extending Entity
-	 * @param name name of the entity
-	 * @param id id of the entity
-	 */
 	public static void register(Class<? extends Entity> entityClass , String name, String displayname, int id)
 	{
 		try

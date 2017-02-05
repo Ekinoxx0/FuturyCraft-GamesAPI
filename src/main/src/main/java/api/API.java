@@ -2,6 +2,7 @@ package api;
 
 import api.commands.CommandsManager;
 import api.config.GlobalConfigData;
+import api.entities.NPCManager;
 import api.events.EventsRegisterer;
 import api.events.listener.GuiManager;
 import api.events.listener.QueueManager;
@@ -26,6 +27,7 @@ public class API extends JavaPlugin
     private EventsRegisterer eventsRegisterer;
 	private MessengerConnection messenger;
 	private KeepAliveService keepAliveService;
+    private NPCManager npcManager;
 
     private int maxPlayers;
     private int minPlayers;
@@ -44,6 +46,7 @@ public class API extends JavaPlugin
         this.commandsManager = new CommandsManager(this);
         this.eventsRegisterer = new EventsRegisterer(this);
         this.keepAliveService = new KeepAliveService(this);
+		this.npcManager = new NPCManager();
     }
 
     @Override
@@ -51,6 +54,7 @@ public class API extends JavaPlugin
     {
         this.configManager.loadConfig();
         this.globalConfig = configManager.get(GlobalConfigData.class);
+        this.npcManager.init();
 		this.messenger = new MessengerConnection(globalConfig.getDeployer().getSocketHost(), globalConfig.getDeployer().getSocketPort());
 		this.keepAliveService.init();
         this.commandsManager.registerCommands();

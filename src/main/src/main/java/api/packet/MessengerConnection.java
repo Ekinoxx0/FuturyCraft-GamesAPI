@@ -15,9 +15,9 @@ import java.util.logging.Level;
  */
 public class MessengerConnection
 {
-	private final Socket socket;
-	private final DataInputStream in;
-	private final DataOutputStream out;
+	private Socket socket;
+	private DataInputStream in;
+	private DataOutputStream out;
 	private final List<PacketListener<?>> listeners = new ArrayList<>();
 	private short lastTransactionID = 0x0000;
 	private final String host;
@@ -30,20 +30,24 @@ public class MessengerConnection
 	{
 		this.host = host;
 		this.port = port;
-
-		try
+		if(!API.getInstance().getGlobalConfig().getDeployer().isNoMessenger())
 		{
-			socket = new Socket(host, port);
-			in = new DataInputStream(socket.getInputStream());
-			out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-			setupConnectionListener();
+			try
+			{
+				socket = new Socket(host, port);
+				in = new DataInputStream(socket.getInputStream());
+				out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+				setupConnectionListener();
+			}
+			catch (IOException e)
+			{
+				API.getInstance().getLogger().log(Level.SEVERE, "Error while creating the ServerSocket (Connection: " + this + ")", e);
+				Bukkit.shutdown(); //Stop because this server is not usable now
+				throw new IllegalStateException(e);
+			}
 		}
-		catch (IOException e)
-		{
-			API.getInstance().getLogger().log(Level.SEVERE, "Error while creating the ServerSocket (Connection: " + this + ")", e);
-			Bukkit.shutdown(); //Stop because this server is not usable now
-			throw new IllegalStateException(e);
-		}
+		else
+			System.out.println("no Messenger = true");
 	}
 
 	private void setupConnectionListener()

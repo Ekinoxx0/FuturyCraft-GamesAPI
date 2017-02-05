@@ -10,4 +10,5 @@ public class ConfigDeployer
 {
 	private final String socketHost;
 	private final int socketPort;
+	private final boolean noMessenger;
 }
