@@ -30,7 +30,8 @@ public class MessengerConnection implements SimpleManager
 	private DataInputStream in;
 	private DataOutputStream out;
 	private final List<PacketListener<?>> listeners = new CopyOnWriteArrayList<>();
-	private final BlockingQueue<PacketData> sendBuffer = new ArrayBlockingQueue<>(20);
+	private final BlockingQueue<PacketData> sendBuffer = new ArrayBlockingQueue<>(API.getInstance().getGlobalConfig()
+			.getDeployer().getSendBufferSize());
 	private final ThreadLoop sender = setupSenderThreadLoop();
 	private final ThreadLoop listener = setupListenerThreadLoop();
 	private final AtomicInteger lastTransactionID = new AtomicInteger();
