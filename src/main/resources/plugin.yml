@@ -1,0 +1,5 @@
+name: FcApi
+version: 0.0.1
+author: loucass003 and SkyBeast
+description: Api principale de Fc
+main: api.API
