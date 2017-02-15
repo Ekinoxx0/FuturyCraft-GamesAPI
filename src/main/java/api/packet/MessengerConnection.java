@@ -30,7 +30,8 @@ public class MessengerConnection implements SimpleManager
 	private DataInputStream in;
 	private DataOutputStream out;
 	private final List<PacketListener<?>> listeners = new CopyOnWriteArrayList<>();
-	private final BlockingQueue<ToSendPacket> sendBuffer = new ArrayBlockingQueue<>(20);
+	private final BlockingQueue<PacketData> sendBuffer = new ArrayBlockingQueue<>(API.getInstance().getGlobalConfig()
+			.getDeployer().getSendBufferSize());
 	private final ThreadLoop sender = setupSenderThreadLoop();
 	private final ThreadLoop listener = setupListenerThreadLoop();
 	private final AtomicInteger lastTransactionID = new AtomicInteger();
@@ -131,11 +132,11 @@ public class MessengerConnection implements SimpleManager
 				{
 					try
 					{
-						ToSendPacket toSend = sendBuffer.take();
+						PacketData toSend = sendBuffer.take();
 						out.writeByte(toSend.packetID);
 						out.writeInt(toSend.transactionID);
-						out.writeShort(toSend.array.size());
-						out.write(toSend.array.toByteArray());
+						out.writeShort(toSend.data.length);
+						out.write(toSend.data);
 						out.flush();
 					}
 					catch (IOException e)
@@ -207,7 +208,8 @@ public class MessengerConnection implements SimpleManager
 		boolean bool = false;
 		try
 		{
-			bool = sendBuffer.offer(new ToSendPacket(Packets.getID(packet.getClass()), transactionID, array),
+			bool = sendBuffer.offer(new PacketData(Packets.getID(packet.getClass()), transactionID,
+							array.toByteArray()),
 					10000,
 					TimeUnit.MILLISECONDS);
 		}
@@ -251,10 +253,10 @@ public class MessengerConnection implements SimpleManager
 
 	@AllArgsConstructor
 	@ToString
-	private static class ToSendPacket
+	private static class PacketData
 	{
 		byte packetID;
 		int transactionID;
-		ByteArrayOutputStream array;
+		byte[] data;
 	}
 }
