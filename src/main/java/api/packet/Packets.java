@@ -1,9 +1,6 @@
 package api.packet;
 
-import api.packet.server.BossBarMessagesPacket;
-import api.packet.server.EndGameData;
-import api.packet.server.KeepAlivePacket;
-import api.packet.server.RequestBossBarMessages;
+import api.packet.server.*;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -15,7 +12,7 @@ public enum Packets
 {
 	// OUTGOING - Bungee-bound
 	KEEP_ALIVE((byte) 0x00, false, KeepAlivePacket.class),
-	SERVER_STATE_PACKET((byte) 0x01, false, KeepAlivePacket.class),
+	SERVER_STATE_PACKET((byte) 0x01, false, ServerStatePacket.class),
 	END_GAME_PACKET((byte) 0x02, false, EndGameData.class),
 	REQUEST_BB_MESSAGES((byte) 0x03, false, RequestBossBarMessages.class),
 

@@ -196,6 +196,7 @@ public class MessengerConnection implements SimpleManager
 		DataOutputStream data = new DataOutputStream(array);
 		try
 		{
+			System.out.println("send packer -> " + packet + " | " + transactionID);
 			packet.write(data);
 		}
 		catch (IOException e)

@@ -40,28 +40,24 @@ public class API extends JavaPlugin
 
 	public API()
 	{
-		this.globalConfig = configManager.get(GlobalConfigData.class);
-		this.configManager.loadConfig();
-
-		this.messenger = new MessengerConnection(globalConfig.getDeployer().getSocketHost(),
-				globalConfig.getDeployer().getSocketPort());
-
 		instance = this;
-		this.configManager = new Config("Global", this);
-		this.configManager.setConfigObject(GlobalConfigData.class);
+
 		this.commandsManager = new CommandsManager(this);
 		this.eventsRegisterer = new EventsRegisterer(this);
 		this.keepAliveService = new KeepAliveService();
 		this.npcManager = new NPCManager();
-
-		keepAliveService.setServerState(ServerState.STARTED);
 	}
 
 	@Override
 	public void onEnable()
 	{
+		this.configManager = new Config("Global", this);
+		this.configManager.setConfigObject(GlobalConfigData.class);
+		this.configManager.loadConfig();
+		this.globalConfig = configManager.get(GlobalConfigData.class);
+		this.messenger = new MessengerConnection(globalConfig.getDeployer().getSocketHost(), globalConfig.getDeployer().getSocketPort());
+		keepAliveService.setServerState(ServerState.STARTED);
 		this.npcManager.init();
-
 		this.keepAliveService.init();
 		this.commandsManager.registerCommands();
 		this.eventsRegisterer.init();
