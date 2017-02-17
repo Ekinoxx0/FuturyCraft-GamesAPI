@@ -1,6 +1,7 @@
 package api.gui;
 
 import com.google.gson.Gson;
+import lombok.ToString;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayOutTitle;
 import org.bukkit.ChatColor;
@@ -10,13 +11,14 @@ import org.bukkit.entity.Player;
 /**
  * Created by loucass003 on 20/11/16.
  */
+@ToString
 public class Title
 {
-
-	private class TitleData
+	@ToString
+	private static class TitleData
 	{
-		public String text;
-		public String color;
+		String text;
+		String color;
 	}
 
 	private int fadeIn;
@@ -28,9 +30,9 @@ public class Title
 
 	private Title(String text, ChatColor color, int fadeIn, int stay, int fadeOut)
 	{
-		this.data = new TitleData();
-		this.data.text = text;
-		this.data.color = color.name().toLowerCase();
+		data = new TitleData();
+		data.text = text;
+		data.color = color.name().toLowerCase();
 		this.fadeIn = fadeIn;
 		this.stay = stay;
 		this.fadeOut = fadeOut;
@@ -71,13 +73,13 @@ public class Title
 
 	public Title setText(String text)
 	{
-		this.data.text = text;
+		data.text = text;
 		return this;
 	}
 
 	public Title setColor(ChatColor color)
 	{
-		this.data.color = color.name().toLowerCase();
+		data.color = color.name().toLowerCase();
 		return this;
 	}
 
@@ -89,16 +91,16 @@ public class Title
 
 	public void sendTitle(Player p)
 	{
-		if (this.sub != null)
-			this.sub.sendTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, p);
-		this.sendTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, p);
+		if (sub != null)
+			sub.sendTitle(PacketPlayOutTitle.EnumTitleAction.SUBTITLE, p);
+		sendTitle(PacketPlayOutTitle.EnumTitleAction.TITLE, p);
 	}
 
 	private void sendTitle(PacketPlayOutTitle.EnumTitleAction type, Player p)
 	{
-		IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a(new Gson().toJson(this.data));
+		IChatBaseComponent chatTitle = IChatBaseComponent.ChatSerializer.a(new Gson().toJson(data));
 		PacketPlayOutTitle title = new PacketPlayOutTitle(type, chatTitle);
-		PacketPlayOutTitle length = new PacketPlayOutTitle(this.fadeIn, this.stay, this.fadeOut);
+		PacketPlayOutTitle length = new PacketPlayOutTitle(fadeIn, stay, fadeOut);
 		((CraftPlayer) p).getHandle().playerConnection.sendPacket(title);
 		if (type == PacketPlayOutTitle.EnumTitleAction.TITLE)
 			((CraftPlayer) p).getHandle().playerConnection.sendPacket(length);

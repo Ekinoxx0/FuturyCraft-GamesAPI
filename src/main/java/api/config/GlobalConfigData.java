@@ -2,6 +2,7 @@ package api.config;
 
 import api.API;
 import lombok.Data;
+import org.bukkit.Location;
 
 /**
  * Created by loucass003 on 26/11/16.
@@ -10,11 +11,12 @@ import lombok.Data;
 public class GlobalConfigData
 {
 	private ConfigDeployer deployer;
-	private ConfigLocation spawn;
+	private Location spawn;
+	private boolean useQueueManager;
 
 	public GlobalConfigData()
 	{
-		deployer = new ConfigDeployer("localhost", 5555, false);
-		spawn = new ConfigLocation(API.getInstance().getServer().getWorlds().get(0).getSpawnLocation());
+		deployer = new ConfigDeployer();
+		spawn = API.getInstance().getServer().getWorlds().get(0).getSpawnLocation();
 	}
 }

@@ -1,10 +1,11 @@
 package api.packet.server;
 
-import api.packet.IncPacket;
+import api.packet.InPacket;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.DataInputStream;
+import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,11 +15,11 @@ import java.util.List;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class BossBarMessagesPacket extends IncPacket
+public class BossBarMessagesPacket extends InPacket
 {
 	private final List<MessageData> messages;
 
-	public BossBarMessagesPacket(DataInputStream data) throws IOException
+	public BossBarMessagesPacket(DataInput data) throws IOException
 	{
 		super(data);
 		short count = data.readShort();
@@ -28,18 +29,13 @@ public class BossBarMessagesPacket extends IncPacket
 	}
 
 	@Data
+	@AllArgsConstructor
 	public static class MessageData
 	{
 		private final String message;
 		private final int time;
 
-		public MessageData(String message, int time)
-		{
-			this.message = message;
-			this.time = time;
-		}
-
-		public MessageData(DataInputStream data) throws IOException
+		public MessageData(DataInput data) throws IOException
 		{
 			message = data.readUTF();
 			time = data.readInt();

@@ -1,8 +1,10 @@
 package api.events.listener;
 
 import api.API;
-import api.events.EventsRegisterer;
-import lombok.Data;
+import api.utils.SimpleManager;
+import lombok.Getter;
+import lombok.ToString;
+import lombok.extern.java.Log;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -25,28 +27,27 @@ import java.util.List;
 /**
  * Created by loucass003 on 27/11/16.
  */
-@Data
-public class SpectatorEvents implements Listener
+@Getter
+@ToString
+@Log
+public class SpectatorEvents implements Listener, SimpleManager
 {
-
-	private EventsRegisterer registerer;
-	private API main;
-
-	private List<Player> players = new ArrayList<>();
+	private final List<Player> players = new ArrayList<>();
 	private Team ghost;
 
-	public SpectatorEvents(EventsRegisterer er)
+	@Override
+	public void init()
 	{
-		this.registerer = er;
-		this.main = er.getMain();
-		Scoreboard sc = this.main.getServer().getScoreboardManager().getMainScoreboard();
-		this.ghost = sc.getTeam("Ghosts");
-		if (this.ghost != null)
-			this.ghost.unregister();
-		this.ghost = sc.registerNewTeam("Ghosts");
-		this.ghost.setCanSeeFriendlyInvisibles(true);
-		this.ghost.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
-		this.ghost.setPrefix(ChatColor.GRAY.toString());
+		API.registerListener(this);
+
+		Scoreboard sc = Bukkit.getScoreboardManager().getMainScoreboard();
+		ghost = sc.getTeam("Ghosts");
+		if (ghost != null)
+			ghost.unregister();
+		ghost = sc.registerNewTeam("Ghosts");
+		ghost.setCanSeeFriendlyInvisibles(true);
+		ghost.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OWN_TEAM);
+		ghost.setPrefix(ChatColor.GRAY.toString());
 	}
 
 	public void setSpectator(Player p)
@@ -88,14 +89,14 @@ public class SpectatorEvents implements Listener
 	@EventHandler
 	public void onPlayerInteract(PlayerInteractEvent e)
 	{
-		if (API.isSpectator(e.getPlayer()))
+		if (players.contains(e.getPlayer()))
 			e.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerToggleFlight(PlayerToggleFlightEvent e)
 	{
-		if (API.isSpectator(e.getPlayer()))
+		if (players.contains(e.getPlayer()))
 			e.setCancelled(true);
 	}
 

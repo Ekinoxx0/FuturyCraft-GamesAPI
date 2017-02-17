@@ -5,4 +5,4 @@ import api.packet.OutPacket;
 /**
  * Created by loucass003 on 2/4/17.
  */
-public class RequestBossBarMessages extends OutPacket {}
+public class RequestBossBarMessagesPacket extends OutPacket {}

@@ -1,9 +1,10 @@
 package api.events.listener;
 
 import api.API;
-import api.config.ConfigLocation;
-import api.events.EventsRegisterer;
-import lombok.Data;
+import api.utils.SimpleManager;
+import lombok.ToString;
+import lombok.extern.java.Log;
+import org.bukkit.Location;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -11,26 +12,21 @@ import org.bukkit.event.player.PlayerJoinEvent;
 /**
  * Created by loucass003 on 26/11/16.
  */
-@Data
-public class PlayerEvents implements Listener
+@ToString
+@Log
+public class PlayerEvents implements Listener, SimpleManager
 {
-
-	private EventsRegisterer registerer;
-	private API main;
-
-	public PlayerEvents(EventsRegisterer er)
-	{
-		this.registerer = er;
-		this.main = er.getMain();
+	@Override
+	public void init() {
+		API.registerListener(this);
 	}
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent e)
 	{
-		ConfigLocation spawn = API.getInstance().getGlobalConfig().getSpawn();
+		Location spawn = API.getInstance().getGlobalConfig().getSpawn();
 		if (spawn == null)
 			return;
-		e.getPlayer().teleport(spawn.getLocation());
+		e.getPlayer().teleport(spawn);
 	}
-
 }

@@ -1,5 +1,7 @@
 package api.gui;
 
+import lombok.Getter;
+import lombok.ToString;
 import net.minecraft.server.v1_11_R1.IChatBaseComponent;
 import net.minecraft.server.v1_11_R1.PacketPlayOutChat;
 import org.bukkit.craftbukkit.v1_11_R1.entity.CraftPlayer;
@@ -8,19 +10,15 @@ import org.bukkit.entity.Player;
 /**
  * Created by loucass003 on 20/11/16.
  */
+@ToString
+@Getter
 class ActionBar
 {
-
 	private String text;
 
-	public ActionBar(String text)
+	ActionBar(String text)
 	{
 		this.text = text;
-	}
-
-	public String getText()
-	{
-		return text;
 	}
 
 	public ActionBar setText(String text)

@@ -4,6 +4,9 @@ import api.API;
 import api.gui.Gui;
 import api.gui.Source;
 import api.interfaces.ActionListener;
+import api.utils.SimpleManager;
+import lombok.ToString;
+import lombok.extern.java.Log;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,16 +18,21 @@ import java.util.List;
 /**
  * Created by loucass003 on 23/11/16.
  */
-public class GuiManager implements Listener
+@ToString
+@Log
+public class GuiManager implements Listener, SimpleManager
 {
+	private final List<Gui> menus = new ArrayList<>();
 
-	private List<Gui> menus = new ArrayList<>();
-	private API main;
-
-	public GuiManager(API main)
+	@Override
+	public void init()
 	{
-		this.main = main;
-		this.main.getServer().getPluginManager().registerEvents(this, this.main);
+		API.registerListener(this);
+	}
+
+	public static GuiManager instance()
+	{
+		return API.getInstance().getGuiManager();
 	}
 
 	@EventHandler
@@ -34,10 +42,10 @@ public class GuiManager implements Listener
 		if (g == null)
 			return;
 		e.setCancelled(true);
-		g.buttonList.stream().filter(b -> b.getCase() == e.getSlot() && e.getClickedInventory().getName().equals(g
+		g.getButtonList().stream().filter(b -> b.getCase() == e.getSlot() && e.getClickedInventory().getName().equals(g
 				.getName())).forEach(b ->
 		{
-			for (ActionListener a : g.getActionListners())
+			for (ActionListener a : g.getActionListeners())
 			{
 				Source s = new Source(b, e.getInventory(), (Player) e.getWhoClicked());
 				a.actionPerformed(s);
@@ -52,7 +60,7 @@ public class GuiManager implements Listener
 		if (g == null)
 			return;
 		g.onExit();
-		this.menus.remove(g);
+		menus.remove(g);
 	}
 
 	@EventHandler
@@ -84,7 +92,7 @@ public class GuiManager implements Listener
 
 	public void openGui(Gui gui, Player p)
 	{
-		this.menus.add(gui);
+		menus.add(gui);
 		gui.openGui(p);
 	}
 

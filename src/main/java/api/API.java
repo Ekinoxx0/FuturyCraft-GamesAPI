@@ -1,58 +1,74 @@
 package api;
 
-import api.commands.CommandsManager;
+import api.commands.SetSpawn;
 import api.config.GlobalConfigData;
 import api.entities.NPCManager;
-import api.events.EventsRegisterer;
 import api.events.listener.GuiManager;
+import api.events.listener.PlayerEvents;
 import api.events.listener.QueueManager;
+import api.events.listener.SpectatorEvents;
 import api.packet.MessengerConnection;
 import api.utils.Config;
+import api.utils.Utils;
 import lombok.Getter;
 import lombok.Setter;
-import org.bukkit.entity.Player;
+import lombok.ToString;
+import lombok.extern.java.Log;
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.craftbukkit.v1_11_R1.CraftServer;
+import org.bukkit.event.Event;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by loucass003 on 25/11/16
  */
 @Getter
-@Setter
+@ToString
+@Log
 public class API extends JavaPlugin
 {
+	@Getter
 	private static API instance;
-	private GuiManager guiManager;
-	private QueueManager queueManager;
-	private CommandsManager commandsManager;
-	private EventsRegisterer eventsRegisterer;
-	private MessengerConnection messenger;
-	private KeepAliveService keepAliveService;
-	private NPCManager npcManager;
+	private final String containerID = Utils.getContainerID();
 
+	private final GuiManager guiManager;
+	private final QueueManager queueManager;
+	private final MessengerConnection messengerConnection;
+	private final KeepAliveService keepAliveService;
+	private final NPCManager npcManager;
+	private final SpectatorEvents spectatorEvents;
+	private final PlayerEvents playerEvents;
+
+	@Setter
 	private int maxPlayers;
+	@Setter
 	private int minPlayers;
-	private Long countdown;
+	@Setter
+	private long countdown;
 
-	private Config configManager;
-	private GlobalConfigData globalConfig;
-
-	private boolean useQueueManager;
+	private final Config configManager;
+	private final GlobalConfigData globalConfig;
 
 	public API()
 	{
-		this.globalConfig = configManager.get(GlobalConfigData.class);
-		this.configManager.loadConfig();
-
-		this.messenger = new MessengerConnection(globalConfig.getDeployer().getSocketHost(),
-				globalConfig.getDeployer().getSocketPort());
-
 		instance = this;
-		this.configManager = new Config("Global", this);
-		this.configManager.setConfigObject(GlobalConfigData.class);
-		this.commandsManager = new CommandsManager(this);
-		this.eventsRegisterer = new EventsRegisterer(this);
-		this.keepAliveService = new KeepAliveService();
-		this.npcManager = new NPCManager();
+
+		log.info("Container ID is " + containerID);
+
+		configManager = new Config("Global", this)
+				.setConfigObject(GlobalConfigData.class);
+		globalConfig = configManager.get(GlobalConfigData.class);
+		configManager.loadConfig();
+
+		guiManager = new GuiManager();
+		queueManager = globalConfig.isUseQueueManager() ? new QueueManager() : null;
+		messengerConnection = new MessengerConnection();
+		keepAliveService = new KeepAliveService();
+		npcManager = new NPCManager();
+		spectatorEvents = new SpectatorEvents();
+		playerEvents = new PlayerEvents();
 
 		keepAliveService.setServerState(ServerState.STARTED);
 	}
@@ -60,52 +76,52 @@ public class API extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
-		this.npcManager.init();
+		guiManager.start();
+		queueManager.start();
+		messengerConnection.start();
+		keepAliveService.start();
+		npcManager.start();
+		spectatorEvents.start();
+		playerEvents.start();
 
-		this.keepAliveService.init();
-		this.commandsManager.registerCommands();
-		this.eventsRegisterer.init();
-		if (this.useQueueManager)
-			this.queueManager = new QueueManager(maxPlayers, minPlayers, countdown);
-		this.guiManager = new GuiManager(this);
+		registerCommand(new SetSpawn());
 
 		keepAliveService.setServerState(ServerState.READY);
+
 	}
 
 	@Override
 	public void onDisable()
 	{
-		if (this.queueManager != null)
-			this.queueManager.clear();
-		this.eventsRegisterer.getSpectatorEvents().clearSpectators();
+		keepAliveService.setServerState(ServerState.STOPPING);
 
-		messenger.stop();
+		guiManager.stop();
+		queueManager.stop();
+		messengerConnection.stop();
+		keepAliveService.stop();
+		npcManager.stop();
+		spectatorEvents.stop();
+		playerEvents.stop();
 	}
 
-	public static ServerState getServerState()
+	public ServerState getServerState()
 	{
-		return instance.keepAliveService.getServerState();
+		return keepAliveService.getServerState();
 	}
 
-	public static API getInstance()
+	public static <T extends Event> T callEvent(T event)
 	{
-		return instance;
+		Bukkit.getPluginManager().callEvent(event);
+		return event;
 	}
 
-	public void useQueueManager(boolean useQueueManager)
+	public static void registerListener(Listener listener)
 	{
-		this.useQueueManager = useQueueManager;
-		if (!useQueueManager && this.queueManager != null)
-		{
-			this.queueManager.clear();
-			this.queueManager = null;
-		}
-		else if (useQueueManager && this.queueManager == null)
-			this.queueManager = new QueueManager(maxPlayers, minPlayers, countdown);
+		Bukkit.getPluginManager().registerEvents(listener, instance);
 	}
 
-	public static boolean isSpectator(Player p)
+	public static void registerCommand(Command command)
 	{
-		return getInstance().getEventsRegisterer().getSpectatorEvents().getPlayers().contains(p);
+		((CraftServer) Bukkit.getServer()).getCommandMap().register(command.getName(), command);
 	}
 }

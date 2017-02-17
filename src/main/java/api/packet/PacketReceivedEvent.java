@@ -12,8 +12,7 @@ import org.bukkit.event.HandlerList;
 @EqualsAndHashCode(callSuper = false)
 public class PacketReceivedEvent extends Event
 {
-	private final IncPacket packet;
-	private final int transactionID;
+	private final InPacket packet;
 
 	private static final HandlerList handlers = new HandlerList();
 

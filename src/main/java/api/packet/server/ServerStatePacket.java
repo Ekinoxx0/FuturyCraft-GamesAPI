@@ -5,7 +5,7 @@ import api.packet.OutPacket;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.DataOutputStream;
+import java.io.DataOutput;
 import java.io.IOException;
 
 /**
@@ -18,8 +18,8 @@ public class ServerStatePacket extends OutPacket
 	private final ServerState state;
 
 	@Override
-	public void write(DataOutputStream data) throws IOException
+	public void write(DataOutput out) throws IOException
 	{
-		data.writeByte(state.ordinal());
+		out.writeByte(state.ordinal());
 	}
 }

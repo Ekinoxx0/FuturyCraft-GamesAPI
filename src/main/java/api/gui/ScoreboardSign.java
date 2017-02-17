@@ -11,8 +11,7 @@ import java.lang.reflect.Field;
  */
 public class ScoreboardSign
 {
-
-	private boolean created = false;
+	private boolean created;
 	private final String[] lines = new String[16];
 	private final Player player;
 	private String objectiveName;

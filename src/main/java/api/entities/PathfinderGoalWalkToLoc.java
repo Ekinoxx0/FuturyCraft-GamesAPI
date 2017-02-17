@@ -12,14 +12,14 @@ import org.bukkit.Location;
 
 public class PathfinderGoalWalkToLoc extends PathfinderGoal
 {
-	private double speed;
-	private Location loc;
-	private NavigationAbstract navigation;
+	private final double speed;
+	private final Location loc;
+	private final NavigationAbstract navigation;
 
 	public PathfinderGoalWalkToLoc(EntityInsentient entity, Location loc, double speed)
 	{
 		this.loc = loc;
-		this.navigation = entity.getNavigation();
+		navigation = entity.getNavigation();
 		this.speed = speed;
 	}
 
@@ -30,7 +30,7 @@ public class PathfinderGoalWalkToLoc extends PathfinderGoal
 
 	public void c()
 	{
-		PathEntity pathEntity = this.navigation.a(loc.getX(), loc.getY(), loc.getZ());
-		this.navigation.a(pathEntity, speed);
+		PathEntity pathEntity = navigation.a(loc.getX(), loc.getY(), loc.getZ());
+		navigation.a(pathEntity, speed);
 	}
 }

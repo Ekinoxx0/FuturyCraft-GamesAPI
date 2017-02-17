@@ -4,7 +4,7 @@ import api.packet.OutPacket;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
-import java.io.DataOutputStream;
+import java.io.DataOutput;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -14,26 +14,26 @@ import java.util.UUID;
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class EndGameData extends OutPacket
+public class EndGameDataPacket extends OutPacket
 {
 	private final List<RelativeData> players;
 
 	@Override
-	public void write(DataOutputStream data) throws IOException
+	public void write(DataOutput out) throws IOException
 	{
-		data.writeShort(players.size());
+		out.writeShort(players.size());
 		for (RelativeData d : players)
-			d.write(data);
+			d.write(out);
 	}
 
 	@Data
-	private static class RelativeData
+	public static class RelativeData
 	{
 		private final UUID uuid;
 		private final long earnedFuturyCoins;
 		private final long earnedTurfuryCoins;
 
-		public void write(DataOutputStream data) throws IOException
+		public void write(DataOutput data) throws IOException
 		{
 			data.writeLong(uuid.getMostSignificantBits());
 			data.writeLong(uuid.getLeastSignificantBits());

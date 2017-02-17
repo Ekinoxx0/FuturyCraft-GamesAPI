@@ -13,13 +13,13 @@ public class SetSpawnEvent extends Event implements Cancellable
 {
 	private final HandlerList handlers = new HandlerList();
 	private boolean cancelled;
-	private Player player;
-	private Location location;
+	private final Player player;
+	private final Location location;
 
 	public SetSpawnEvent(Player p, Location l)
 	{
-		this.player = p;
-		this.location = l;
+		player = p;
+		location = l;
 	}
 
 	public Location getLocation()

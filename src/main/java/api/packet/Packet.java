@@ -5,5 +5,5 @@ package api.packet;
  */
 public abstract class Packet
 {
-	protected Packet() {}
+	Packet() {}
 }

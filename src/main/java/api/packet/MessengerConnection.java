@@ -2,260 +2,192 @@ package api.packet;
 
 import api.API;
 import api.utils.SimpleManager;
-import api.utils.concurrent.Callback;
-import api.utils.concurrent.ThreadLoop;
-import api.utils.concurrent.ThreadLoops;
-import lombok.AllArgsConstructor;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+import com.rabbitmq.client.*;
 import lombok.ToString;
-import org.bukkit.Bukkit;
+import lombok.extern.java.Log;
 
-import java.io.*;
-import java.net.Socket;
+import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Level;
 
 /**
  * Created by SkyBeast on 18/12/2016.
  */
 @ToString
+@Log
 public class MessengerConnection implements SimpleManager
 {
-	private Socket socket;
-	private DataInputStream in;
-	private DataOutputStream out;
-	private final List<PacketListener<?>> listeners = new CopyOnWriteArrayList<>();
-	private final BlockingQueue<PacketData> sendBuffer = new ArrayBlockingQueue<>(API.getInstance().getGlobalConfig()
-			.getDeployer().getSendBufferSize());
-	private final ThreadLoop sender = setupSenderThreadLoop();
-	private final ThreadLoop listener = setupListenerThreadLoop();
-	private final AtomicInteger lastTransactionID = new AtomicInteger();
-	private final String host;
-	private final int port;
-	private boolean identified;
-	private volatile boolean end;
+	private static final String BUNGEECORD_QUEUE = "BungeeCord";
+	private static final String EXCHANGER = "servers";
+	private String dockerID;
+	private Connection connection;
+	private Channel channel;
+	private MessageHandler consumer;
 
-	public MessengerConnection(String host, int port)
+	@Override
+	public void init() throws IOException, TimeoutException
 	{
-		this.host = host;
-		this.port = port;
-		if (!API.getInstance().getGlobalConfig().getDeployer().isNoMessenger())
-		{
-			try
-			{
-				socket = new Socket(host, port);
-				in = new DataInputStream(socket.getInputStream());
-				out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-				tryIdentify();
-			}
-			catch (IOException e)
-			{
-				API.getInstance().getLogger().log(Level.SEVERE, "Error while creating the ServerSocket (Connection: "
-						+ this + ")", e);
-				Bukkit.shutdown(); //Stop because this server is not usable now
-				throw new IllegalStateException(e);
-			}
-		}
-		else
-			System.out.println("no Messenger = true");
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost("localhost");
+		connection = factory.newConnection();
+		channel = connection.createChannel();
+
+		dockerID = API.getInstance().getContainerID();
+		channel.queueDeclare(dockerID, false, false, false, null);
+		channel.queueBind(dockerID, EXCHANGER, dockerID);
+
+		consumer = new MessageHandler();
+		channel.basicConsume(dockerID, true, consumer);
 	}
 
-	private void tryIdentify()
+	public static MessengerConnection instance()
 	{
-		new Thread(
-				() ->
-				{
-					try
-					{
-						out.writeInt(Bukkit.getPort());
-						out.flush();
-
-						if (!in.readBoolean())
-						{
-							throw new IllegalStateException("Server did not accept me ;( Tried to identify with port "
-									+ Bukkit
-									.getPort());
-						}
-						identified = true;
-
-						sender.start();
-						listener.start();
-					}
-					catch (Exception e)
-					{
-						API.getInstance().getLogger().log(Level.SEVERE, "Error while identifying (Connection: " + this
-										+ ")",
-								e);
-					}
-				}
-		).start();
-	}
-
-	private ThreadLoop setupListenerThreadLoop()
-	{
-		return ThreadLoops.newConditionThreadLoop(
-				() -> !socket.isClosed(),
-				() ->
-				{
-					try
-					{
-						byte id = in.readByte();
-						int transactionID = in.readInt();
-						short i = in.readShort();
-						byte[] data = new byte[i];
-
-						in.readFully(data); //Read all data and store it to the array
-
-						handleData(id, transactionID, data);
-					}
-					catch (IOException e)
-					{
-						if (!end)
-							API.getInstance().getLogger().log(Level.SEVERE, "Error while reading the socket " +
-									"(Connection: "
-									+ this + ")", e);
-					}
-				}
-		);
-	}
-
-
-	private ThreadLoop setupSenderThreadLoop()
-	{
-		return ThreadLoops.newInfiniteThreadLoop(
-				() ->
-				{
-					try
-					{
-						PacketData toSend = sendBuffer.take();
-						out.writeByte(toSend.packetID);
-						out.writeInt(toSend.transactionID);
-						out.writeShort(toSend.data.length);
-						out.write(toSend.data);
-						out.flush();
-					}
-					catch (IOException e)
-					{
-						API.getInstance().getLogger().log(Level.SEVERE, "Cannot send buffered packet!", e);
-					}
-				}
-		);
-	}
-
-	@SuppressWarnings("unchecked")
-	private void handleData(byte id, int transactionID, byte[] arrayIn) throws IOException
-	{
-		DataInputStream data = new DataInputStream(new ByteArrayInputStream(arrayIn)); //Create an InputStream
-		// from the byte array, so it can be redistributed
-
-		try
-		{
-			IncPacket packet = Packets.constructIncomingPacket(id, data);
-
-			if (packet == null)
-				throw new IllegalArgumentException("Cannot find packet ID " + id + " (transactionID=" + transactionID
-						+ ", in=" + Arrays.toString(arrayIn) + ")");
-
-			listeners.forEach(listener ->
-			{
-				if (listener.transactionID == transactionID && listener.clazz == packet.getClass())
-				{
-					((Callback<IncPacket>) listener.callback).response(packet);
-					listeners.remove(listener);
-				}
-			});
-
-			Bukkit.getPluginManager().callEvent(new PacketReceivedEvent(packet, transactionID));
-		}
-		catch (ReflectiveOperationException e)
-		{
-			API.getInstance().getLogger().log(Level.SEVERE, "Error while constructing packet id " + id + " with " +
-					"data " + Arrays.toString(arrayIn) + "  (Connection: " + this + ")", e);
-		}
-	}
-
-	public <T extends IncPacket> void listenPacket(Class<T> clazz, short transactionID, Callback<T> callback)
-	{
-		listeners.add(new PacketListener<>(clazz, callback, transactionID));
-	}
-
-	public int sendPacket(OutPacket packet)
-	{
-		int transactionID = lastTransactionID.getAndIncrement();
-		sendPacket(packet, transactionID);
-		return transactionID;
-	}
-
-	public void sendPacket(OutPacket packet, int transactionID)
-	{
-		ByteArrayOutputStream array = new ByteArrayOutputStream();
-		DataOutputStream data = new DataOutputStream(array);
-		try
-		{
-			packet.write(data);
-		}
-		catch (IOException e)
-		{
-			throw new IllegalArgumentException("Cannot serialize packet " + packet, e);
-		}
-
-		boolean bool = false;
-		try
-		{
-			bool = sendBuffer.offer(new PacketData(Packets.getID(packet.getClass()), transactionID,
-							array.toByteArray()),
-					10000,
-					TimeUnit.MILLISECONDS);
-		}
-		catch (InterruptedException e)
-		{
-			cannotBuffer(e);
-		}
-
-		if (!bool)
-			cannotBuffer(null);
-	}
-
-	private void cannotBuffer(InterruptedException e)
-	{
-		API.getInstance().getLogger().log(Level.SEVERE, "Cannot buffer packet!");
-		if (e != null)
-			API.getInstance().getLogger().log(Level.SEVERE, "Exception:", e);
+		return API.getInstance().getMessengerConnection();
 	}
 
 	@Override
 	public void stop()
 	{
-		end = true;
 		try
 		{
-			socket.close();
+			channel.close();
+			connection.close();
 		}
-		catch (IOException ignored) {}
-		sender.stop();
-		listener.stop();
+		catch (IOException | TimeoutException ignored) {}
 	}
 
-	@AllArgsConstructor
-	@ToString
-	private static class PacketListener<T>
+	/**
+	 * Send a packet.
+	 *
+	 * @param packet the packet to send
+	 */
+	public void sendPacket(OutPacket packet)
 	{
-		Class<T> clazz;
-		Callback<T> callback;
-		short transactionID;
+		try
+		{
+			send(serializePacket(dockerID, packet));
+		}
+		catch (IOException e)
+		{
+			log.log(Level.SEVERE, "Cannot send packet to BungeeCord with packet " + packet + '.', e);
+		}
 	}
 
-	@AllArgsConstructor
-	@ToString
-	private static class PacketData
+	/**
+	 * Serialize a packet with its header.
+	 *
+	 * @param packet the packet
+	 * @return the serialized packet
+	 * @throws IOException i/o related method
+	 */
+	private static byte[] serializePacket(String serverID, OutPacket packet)
+			throws IOException
 	{
-		byte packetID;
-		int transactionID;
-		byte[] data;
+		// Header
+		ByteArrayDataOutput out = ByteStreams.newDataOutput();
+		out.writeUTF(serverID);
+		out.writeByte(Packets.getId(packet.getClass()));
+
+		// Packet
+		byte[] raw = serializeRawPacket(packet);
+		out.writeInt(raw.length);
+		out.write(raw);
+
+		return out.toByteArray();
+	}
+
+	/**
+	 * Serialize a raw packet without header.
+	 *
+	 * @param packet the packet to serialize
+	 * @return the serialized packet
+	 * @throws IOException i/o related method
+	 */
+	private static byte[] serializeRawPacket(OutPacket packet)
+			throws IOException
+	{
+		ByteArrayDataOutput packetOut = ByteStreams.newDataOutput();
+		packet.write(packetOut);
+		return packetOut.toByteArray();
+	}
+
+	/**
+	 * Send a packet to the BungeeCord.
+	 *
+	 * @param message the serialized packet
+	 * @throws IOException i/o related method
+	 */
+	private void send(byte[] message)
+			throws IOException
+	{
+		channel.basicPublish(BUNGEECORD_QUEUE, "", null, message);
+	}
+
+	/**
+	 * Receive packets from BungeeCord.
+	 */
+	private class MessageHandler extends DefaultConsumer
+	{
+		MessageHandler()
+		{
+			super(channel);
+		}
+
+		@Override
+		public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
+		                           byte[] body)
+				throws IOException
+		{
+			ByteArrayDataInput in = ByteStreams.newDataInput(body);
+
+			// Packet
+			InPacket packet = deserializePacket(in);
+
+			API.callEvent(new PacketReceivedEvent(packet));
+		}
+	}
+
+	/**
+	 * Deserialize a packet with its header.
+	 *
+	 * @param in the data of the packet
+	 * @return the packet
+	 * @throws IOException i/o related method
+	 */
+	private static InPacket deserializePacket(ByteArrayDataInput in)
+			throws IOException
+	{
+		byte id = in.readByte();
+		int len = in.readInt();
+		byte[] array = new byte[len];
+		in.readFully(array);
+
+		return deserializeRawPacket(id, array);
+	}
+
+	/**
+	 * Deserialize a raw packet without its header.
+	 *
+	 * @param id the id of the packet
+	 * @param in the data of the packet
+	 * @return the packet
+	 * @throws IOException i/o related method
+	 */
+	private static InPacket deserializeRawPacket(byte id, byte[] in)
+			throws IOException
+	{
+		try
+		{
+			return Packets.constructIncomingPacket(id, ByteStreams.newDataInput(in));
+		}
+		catch (ReflectiveOperationException e)
+		{
+			throw new IOException("Cannot read incoming packet with id " + id + " and data " + Arrays.toString(in) +
+					'.', e);
+		}
 	}
 }

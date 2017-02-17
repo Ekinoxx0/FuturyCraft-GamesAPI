@@ -4,6 +4,8 @@ import com.google.common.primitives.Primitives;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * Created by loucass003 on 26/11/16.
@@ -88,5 +90,18 @@ public class Utils
 	public static <T> T getPrivateField(String fieldName, Class clazz, Class<T> to)
 	{
 		return getField(fieldName, clazz, null, to, true);
+	}
+
+	public static String getContainerID()
+	{
+		try
+		{
+			InetAddress address = InetAddress.getLocalHost();
+			return address.getHostName();
+		}
+		catch (UnknownHostException e)
+		{
+			throw new RuntimeException("Cannot get container ID", e);
+		}
 	}
 }
