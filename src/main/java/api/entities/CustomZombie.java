@@ -1,7 +1,7 @@
 package api.entities;
 
 import api.API;
-import api.utils.Utils;
+import api.utils.NMSReflection;
 import net.minecraft.server.v1_11_R1.EntityZombie;
 import net.minecraft.server.v1_11_R1.PathfinderGoalSelector;
 import net.minecraft.server.v1_11_R1.World;
@@ -26,29 +26,24 @@ public class CustomZombie extends EntityZombie
 		((CraftLivingEntity) getBukkitEntity()).setRemoveWhenFarAway(true);
 	}
 
+	private static final NMSReflection.FieldAccessor<Set<?>> GOAL_SELECTOR_B_FIELD = NMSReflection
+			.getFieldAccessor(PathfinderGoalSelector.class, "b");
+	private static final NMSReflection.FieldAccessor<Set<?>> GOAL_SELECTOR_C_FIELD = NMSReflection
+			.getFieldAccessor(PathfinderGoalSelector.class, "c");
+
 	@Override
 	public void setAI(boolean flag)
 	{
 		if (flag)
-			r();
-		else
 		{
-			Set<?> gb = Utils.getField("b", PathfinderGoalSelector.class, goalSelector, Set.class, true);
-			Set<?> gc = Utils.getField("c", PathfinderGoalSelector.class, goalSelector, Set.class, true);
-			Set<?> tb = Utils.getField("b", PathfinderGoalSelector.class, targetSelector, Set.class, true);
-			Set<?> tc = Utils.getField("c", PathfinderGoalSelector.class, targetSelector, Set.class, true);
-
-			clear(gb);
-			clear(gc);
-			clear(tb);
-			clear(tc);
+			r();
+			return;
 		}
-	}
 
-	private static void clear(Set<?> set)
-	{
-		if (set != null)
-			set.clear();
+		GOAL_SELECTOR_B_FIELD.get(goalSelector).clear();
+		GOAL_SELECTOR_C_FIELD.get(goalSelector).clear();
+		GOAL_SELECTOR_B_FIELD.get(targetSelector).clear();
+		GOAL_SELECTOR_C_FIELD.get(targetSelector).clear();
 	}
 
 	public void gotoLoc(Location l)

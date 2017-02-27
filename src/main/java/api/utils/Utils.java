@@ -1,9 +1,6 @@
 package api.utils;
 
-import com.google.common.primitives.Primitives;
-
 import java.io.*;
-import java.lang.reflect.Field;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -12,8 +9,6 @@ import java.net.UnknownHostException;
  */
 public class Utils
 {
-
-	public static final String NMS_PACKAGE = "net.minecraft.server";
 
 	public static void writeText(File f, String content)
 	{
@@ -56,40 +51,6 @@ public class Utils
 			e.printStackTrace();
 		}
 		return null;
-	}
-
-	public static Integer isNumeric(String str)
-	{
-		try
-		{
-			return Integer.valueOf(str);
-		}
-		catch (Exception e)
-		{
-			return null;
-		}
-	}
-
-	public static <T> T getField(String fieldName, Class clazz, Object instance, Class<T> to, boolean isPrivate)
-	{
-		try
-		{
-			Field field = clazz.getDeclaredField(fieldName);
-			if (isPrivate)
-				field.setAccessible(true);
-			return Primitives.wrap(to).cast(field.get(instance));
-		}
-		catch (NoSuchFieldException | IllegalAccessException e)
-		{
-			e.printStackTrace();
-		}
-
-		return null;
-	}
-
-	public static <T> T getPrivateField(String fieldName, Class clazz, Class<T> to)
-	{
-		return getField(fieldName, clazz, null, to, true);
 	}
 
 	public static String getContainerID()
