@@ -23,7 +23,7 @@ public class MessengerConnection implements SimpleManager
 {
 	private static final String BUNGEECORD_QUEUE = "BungeeCord";
 	private static final String EXCHANGER = "servers";
-	private String dockerID;
+	private final String dockerID = API.getInstance().getContainerID();
 	private Connection connection;
 	private Channel channel;
 	private MessageHandler consumer;
@@ -36,7 +36,6 @@ public class MessengerConnection implements SimpleManager
 		connection = factory.newConnection();
 		channel = connection.createChannel();
 
-		dockerID = API.getInstance().getContainerID();
 		channel.queueDeclare(dockerID, false, false, false, null);
 		channel.queueBind(dockerID, EXCHANGER, dockerID);
 
