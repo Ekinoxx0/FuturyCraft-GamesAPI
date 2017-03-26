@@ -24,23 +24,29 @@ public class MessengerConnection implements SimpleManager
 	private static final String BUNGEECORD_QUEUE = "BungeeCord";
 	private static final String EXCHANGER = "servers";
 	private final String dockerID = API.getInstance().getContainerID();
-	private Connection connection;
-	private Channel channel;
-	private MessageHandler consumer;
+	private final Connection connection;
+	private final Channel channel;
+	private final MessageHandler consumer;
 
-	@Override
-	public void init() throws IOException, TimeoutException
+	public MessengerConnection()
 	{
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
-		connection = factory.newConnection();
-		channel = connection.createChannel();
+		try
+		{
+			ConnectionFactory factory = new ConnectionFactory();
+			factory.setHost("localhost");
+			connection = factory.newConnection();
+			channel = connection.createChannel();
 
-		channel.queueDeclare(dockerID, false, false, false, null);
-		channel.queueBind(dockerID, EXCHANGER, dockerID);
+			channel.queueDeclare(dockerID, false, false, false, null);
+			channel.queueBind(dockerID, EXCHANGER, dockerID);
 
-		consumer = new MessageHandler();
-		channel.basicConsume(dockerID, true, consumer);
+			consumer = new MessageHandler();
+			channel.basicConsume(dockerID, true, consumer);
+		}
+		catch (IOException | TimeoutException e)
+		{
+			throw new RuntimeException("Error while loading the MessengerConnection", e);
+		}
 	}
 
 	public static MessengerConnection instance()
