@@ -57,10 +57,9 @@ public class API extends JavaPlugin
 
 		log.info("Container ID is " + containerID);
 
-		configManager = new Config("Global", this)
-				.setConfigObject(GlobalConfigData.class);
-		globalConfig = configManager.get(GlobalConfigData.class);
+		configManager = new Config("Global", this).setConfigObject(GlobalConfigData.class);
 		configManager.loadConfig();
+		globalConfig = configManager.get(GlobalConfigData.class);
 
 		guiManager = new GuiManager();
 		queueManager = globalConfig.isUseQueueManager() ? new QueueManager() : null;
@@ -76,16 +75,16 @@ public class API extends JavaPlugin
 	@Override
 	public void onEnable()
 	{
+		getGlobalConfig().onEnable();
 		guiManager.start();
-		queueManager.start();
+		if(queueManager != null)
+			queueManager.start();
 		messengerConnection.start();
 		keepAliveService.start();
 		npcManager.start();
 		spectatorEvents.start();
 		playerEvents.start();
-
 		registerCommand(new SetSpawn());
-
 		keepAliveService.setServerState(ServerState.READY);
 
 	}
@@ -96,7 +95,9 @@ public class API extends JavaPlugin
 		keepAliveService.setServerState(ServerState.STOPPING);
 
 		guiManager.stop();
-		queueManager.stop();
+
+		if(queueManager != null)
+			queueManager.stop();
 		messengerConnection.stop();
 		keepAliveService.stop();
 		npcManager.stop();

@@ -17,6 +17,11 @@ public class GlobalConfigData
 	public GlobalConfigData()
 	{
 		deployer = new ConfigDeployer();
+		useQueueManager = false;
+	}
+
+	public void onEnable()
+	{
 		spawn = API.getInstance().getServer().getWorlds().get(0).getSpawnLocation();
 	}
 }
