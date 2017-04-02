@@ -14,6 +14,10 @@
 
     <repositories>
         <repository>
+            <id>futury</id>
+            <url>http://futurycraft.fr:9999/nexus/content/repositories/thirdparty/</url>
+        </repository>
+        <repository>
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
@@ -27,9 +31,9 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
-            <groupId>org.bukkit</groupId>
-            <artifactId>bukkit</artifactId>
-            <version>1.11.2-R0.1-SNAPSHOT</version>
+            <groupId>fakepath</groupId>
+            <artifactId>spigot</artifactId>
+            <version>1.11.2</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
